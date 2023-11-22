@@ -33,7 +33,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     const [decodedLogin, decodedPassword] = decodedData.split(":")
 
     if (decodedLogin !== login || decodedPassword !== password) {
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
 
