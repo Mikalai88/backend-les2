@@ -10,12 +10,8 @@ import {BlogRepository} from "../repositories/blog-repository";
 
 export const postRoute = Router({})
 
-postRoute.get('', () => {
-
-})
-
 postRoute.get('/', (req: Request, res: Response) => {
-    const posts = PostRepository.getAllPosts
+    const posts = PostRepository.getAllPosts()
     res.status(HTTP_STATUSES.OK_200).send(posts)
 })
 
