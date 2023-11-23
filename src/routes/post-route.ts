@@ -19,7 +19,7 @@ postRoute.get('/', (req: Request, res: Response) => {
     res.status(HTTP_STATUSES.OK_200).send(posts)
 })
 
-postRoute.get('/:id', authMiddleware, (req: Request, res: Response) => {
+postRoute.get('/:id', (req: Request, res: Response) => {
     const id = req.params.id
     const blog = PostRepository.getPostById(id)
 
