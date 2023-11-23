@@ -10,7 +10,7 @@ import {randomUUID} from "crypto";
 export const blogRoute = Router({})
 
 blogRoute.get('/', (req: Request, res: Response) => {
-    const blogs = BlogRepository.getAllBlogs
+    const blogs = BlogRepository.getAllBlogs()
     res.status(HTTP_STATUSES.OK_200).send(blogs)
 })
 
