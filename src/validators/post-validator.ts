@@ -23,8 +23,8 @@ const contentValidation = body("content")
 const blogIdValidation = body('blogId')
     .isString()
     .trim()
-    .custom((value) => {
-        const blog = BlogRepository.getBlogById(value)
+    .custom(async (value) => {
+        const blog = await BlogRepository.getBlogById(value)
         if (!blog) {
             return false
         }
