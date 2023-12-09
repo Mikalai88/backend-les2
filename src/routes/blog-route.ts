@@ -1,7 +1,6 @@
 import {Router, Request, Response} from "express";
 import {BlogRepository} from "../repositories/blog-repository";
 import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../types/common";
-import {HTTP_STATUSES} from "../settings";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {blogValidation} from "../validators/blogs-validator";
 import {OutputBlogType} from "../types/blog/output";

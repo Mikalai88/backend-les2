@@ -1,6 +1,5 @@
 import {Router, Request, Response} from "express";
 import {PostRepository} from "../repositories/post-repository";
-import {HTTP_STATUSES} from "../settings";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../types/common";
 import {postValidation} from "../validators/post-validator";
@@ -30,7 +29,7 @@ postRoute.post('/', authMiddleware, postValidation(), async (req: RequestWithBod
     if (postId) {
         const newPost = await PostRepository.getPostById(postId)
         if (newPost) {
-            res.sendStatus(HTTP_STATUSES.CREATED_201).send(newPost)
+            res.sendStatus(201).send(newPost)
         }
     }
     res.sendStatus(404)
