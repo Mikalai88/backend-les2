@@ -1,6 +1,8 @@
 import {body} from "express-validator";
 import {BlogRepository} from "../repositories/blog-repository";
 import {inputModelValidation} from "../middlewares/inputModel/input-model-validation";
+import {blogCollection} from "../db/db";
+import {ObjectId} from "mongodb";
 
 const titleValidation = body("title")
     .isString()
@@ -23,12 +25,13 @@ const contentValidation = body("content")
 const blogIdValidation = body('blogId')
     .isString()
     .trim()
-    .custom(async (value) => {
-        const blog = await BlogRepository.getBlogById(value)
-        if (!blog) {
-            return false
+    .custom(async blogId => {
+        if (ObjectId.isValid(blogId)) {
+            const isFind = await blogCollection.findOne({_id: blogId})
+            if (!isFind) {
+                throw new Error('Invalid BlogId')
+            }
         }
-        return true
     })
     .withMessage("Incorrect blogId")
 
