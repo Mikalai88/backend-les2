@@ -1,40 +1,68 @@
+import {MongoClient} from "mongodb";
+
+export const port = 3000
+
+const mongoUri = process.env.MONGO_URL || "mongodb://0.0.0.0:27017"
+
+const client = new MongoClient(mongoUri)
+
+const db = client.db('node-blog')
+
+export const blogCollection = db.collection<BlogType>('blog')
+export const postCollection = db.collection<PostType>('post')
+export const videoCollection = db.collection<VideoType>('video')
+
+export const runDb = async () => {
+    try {
+        await client.connect()
+        await client.db("admin").command({ping: 1})
+        console.log('Client connected to DB')
+        console.log(`listen on port ${port}`)
+    } catch (e) {
+        console.log(`${e}`)
+        await client.close()
+    }
+}
+
+
+
 import {VideoType} from "../types/video/output";
-import {BlogType} from "../types/blog/output";
-import {PostType} from "../types/post/output";
+import {BlogType, OutputBlogType} from "../types/blog/output";
+import {OutputPostType, PostType} from "../types/post/output";
 
-type DBType = {
-    videos: VideoType[]
-    blogs: BlogType[]
-    posts: PostType[]
-}
+// type DBType = {
+//     videos: VideoType[]
+//     blogs: BlogType[]
+//     posts: PostType[]
+// }
 
-export const db: DBType = {
-    videos: [
-        {
-            id: 1,
-            title: "string",
-            author: "string",
-            canBeDownloaded: true,
-            minAgeRestriction: null,
-            createdAt: "2023-11-06T15:58:00.351Z",
-            publicationDate: "2023-11-06T15:58:00.351Z",
-            availableResolutions: ["P144"]
-        }
-    ],
-    blogs: [{
-        id: "string",
-        name: "string",
-        description: "string",
-        websiteUrl: "string"
-    }],
-    posts: [{
-            id: "string",
-            title: "string",
-            shortDescription: "string",
-            content: "string",
-            blogId: "string",
-            blogName: "string"
-    }]
-}
+// export const db: DBType = {
+//     videos: [
+//         {
+//             id: 1,
+//             title: "string",
+//             author: "string",
+//             canBeDownloaded: true,
+//             minAgeRestriction: null,
+//             createdAt: "2023-11-06T15:58:00.351Z",
+//             publicationDate: "2023-11-06T15:58:00.351Z",
+//             availableResolutions: ["P144"]
+//         }
+//     ],
+//     blogs: [{
+//         id: "string",
+//         name: "string",
+//         description: "string",
+//         websiteUrl: "string"
+//     }],
+//     posts: [{
+//             id: "string",
+//             title: "string",
+//             shortDescription: "string",
+//             content: "string",
+//             blogId: "string",
+//             blogName: "string"
+//     }]
+// }
 
 //kjhgf

@@ -1,7 +1,11 @@
 import {app} from "./settings"
+import {port, runDb} from "./db/db";
 
-const port = 3000
+const appStart = async () => {
+    await runDb()
+    app.listen(port, async () => {
+        console.log(`app start at port ${port}`)
+    })
+}
 
-app.listen(port, () => {
-    console.log(`listen on port ${port}`)
-})
+appStart()
