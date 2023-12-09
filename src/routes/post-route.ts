@@ -17,9 +17,9 @@ postRoute.get('/:id', async (req: RequestWithParams<PostParams>, res: Response<O
     const id = req.params.id
     const post = await PostRepository.getPostById(id)
     if (!post) {
-        res.sendStatus(404)
+        return res.sendStatus(404)
     }
-    res.status(200).send(post!)
+    return res.status(200).send(post!)
 })
 
 postRoute.post('/', authMiddleware, postValidation(), async (req: RequestWithBody<CreatePostInputModel>,
