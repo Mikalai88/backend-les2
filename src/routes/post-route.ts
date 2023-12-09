@@ -4,7 +4,7 @@ import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../types/common";
 import {postValidation} from "../validators/post-validator";
 import {CreatePostInputModel, PostParams, UpdatePostInputModel} from "../types/post/input";
-import {OutputPostType} from "../types/post/output";
+import {OutputPostType, PostType} from "../types/post/output";
 
 export const postRoute = Router({})
 
@@ -23,16 +23,16 @@ postRoute.get('/:id', async (req: RequestWithParams<PostParams>, res: Response<O
 })
 
 postRoute.post('/', authMiddleware, postValidation(), async (req: RequestWithBody<CreatePostInputModel>,
-                                                       res: Response) => {
+                                                       res: Response<PostType | null>) => {
+    console.log(req.body)
     let {title, shortDescription, content, blogId}: CreatePostInputModel = req.body
     const postId = await PostRepository.createPost({title, shortDescription, content, blogId})
+    console.log(postId)
     if (postId) {
         const newPost = await PostRepository.getPostById(postId)
-        if (newPost) {
-            res.sendStatus(201).send(newPost)
-        }
+        return res.status(201).send(newPost)
     }
-    res.sendStatus(404)
+    return res.sendStatus(404)
 })
 
 postRoute.put('/:id', authMiddleware, postValidation(), async (req: RequestWithParamsAndBody<PostParams, UpdatePostInputModel>,

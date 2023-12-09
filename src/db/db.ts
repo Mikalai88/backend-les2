@@ -2,7 +2,7 @@ import {MongoClient} from "mongodb";
 import dotenv from 'dotenv'
 dotenv.config()
 
-export const port = 3000
+export const port = 3001
 
 const mongoUri = 'mongodb+srv://admin:admin@cluster0.vsonmz0.mongodb.net/?retryWrites=true&w=majority'
 // process.env.MONGO_URL ||

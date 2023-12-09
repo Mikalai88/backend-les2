@@ -26,17 +26,21 @@ export class PostRepository {
     }
 
     static async createPost(params: CreatePostInputModel) {
-        const createdAt = new Date()
-        const blog = await BlogRepository.getBlogById(params.blogId)
-        if (blog) {
-            const newPost: PostType = {
-                ...params,
-                blogName: blog.name,
-                createdAt: createdAt.toISOString()
+        try {
+            const createdAt = new Date()
+            const blog: OutputBlogType | null = await BlogRepository.getBlogById(params.blogId)
+            if (blog) {
+                const newPost: PostType = {
+                    ...params,
+                    blogName: blog.name,
+                    createdAt: createdAt.toISOString()
+                }
+                const result = await postCollection.insertOne(newPost)
+                return result.insertedId.toString()
+            } else {
+                return null
             }
-            const result = await postCollection.insertOne(newPost)
-            return result.insertedId.toString()
-        } else {
+        } catch (err) {
             return null
         }
     }
@@ -49,8 +53,7 @@ export class PostRepository {
                     title: params.title,
                     shortDescription: params.shortDescription,
                     content: params.content,
-                    blogId: params.blogId,
-                    blogName: blog!.name
+                    blogId: params.blogId
                 }
             }
             )
