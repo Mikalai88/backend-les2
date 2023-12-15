@@ -102,7 +102,7 @@ export class BlogRepository {
 
     static async deleteBlog(id: string): Promise<boolean> {
         try {
-            const result = await blogCollection.deleteOne({_id: new ObjectId(id)})
+            const result = await blogCollection.deleteOne({id: id})
             return !!result.deletedCount
         } catch (err) {
             return false

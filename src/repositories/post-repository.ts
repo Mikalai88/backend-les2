@@ -97,7 +97,7 @@ export class PostRepository {
 
     static async deletePost(id: string) {
         try {
-            const result = await postCollection.deleteOne({_id: new ObjectId(id)})
+            const result = await postCollection.deleteOne({id: id})
             return !!result.deletedCount
         } catch (err) {
             return false
