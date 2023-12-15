@@ -1,19 +1,47 @@
-import {postCollection} from "../db/db";
-import {OutputPostType, PostType} from "../types/post/output";
-import {CreatePostInputModel, UpdatePostInputModel} from "../types/post/input";
+import {blogCollection, postCollection} from "../db/db";
+import {OutputItemsPostType, OutputPostType, PostType} from "../types/post/output";
+import {CreatePostInputModel, SortPostsDataType, UpdatePostInputModel} from "../types/post/input";
 import {randomUUID} from "crypto";
 import {BlogRepository} from "./blog-repository";
-import {OutputBlogType} from "../types/blog/output";
+import {OutputBlogType, OutputItemsBlogType} from "../types/blog/output";
 import {ObjectId, WithId} from "mongodb";
 import {postMapper} from "../types/post/mapper";
+import {blogMapper} from "../types/blog/mapper";
+import {SortBlogsDataType} from "../types/blog/input";
+import {PostService} from "../domain/post-service";
 
 export class PostRepository {
-    static async getAllPosts(): Promise<OutputPostType[]> {
-        const posts: WithId<PostType>[] = await postCollection.find({}).toArray()
-        return posts.map(postMapper)
+    static async getAllPosts(sortData: SortPostsDataType): Promise<OutputPostType> {
+        // const posts: WithId<PostType>[] = await postCollection.find({}).toArray()
+        // return posts.map(postMapper)
+
+        const sortBy = sortData.sortBy ?? 'createdAt'
+        const sortDirection = sortData.sortDirection ?? 'desc'
+        const pageNumber = sortData.pageNumber ?? 1
+        const pageSize = sortData.pageSize ?? 10
+
+        const posts = await postCollection
+            .find({})
+            .sort(sortBy, sortDirection)
+            .skip((+pageNumber - 1) * +pageSize)
+            .limit(+pageSize)
+            .toArray()
+
+        const totalCount = await postCollection
+            .countDocuments({})
+
+        const pageCount = Math.ceil(totalCount / +pageSize)
+
+        return {
+            pagesCount: pageCount,
+            page: +pageNumber,
+            pageSize: +pageSize,
+            totalCount: +totalCount,
+            items: posts.map(postMapper)
+        }
     }
 
-    static async getPostById(id: string): Promise<OutputPostType | null> {
+    static async getPostById(id: string): Promise<OutputItemsPostType | null> {
         try {
             const post = await postCollection.findOne({_id: new ObjectId(id)})
             if (!post) {
@@ -25,39 +53,46 @@ export class PostRepository {
         }
     }
 
-    static async createPost(params: CreatePostInputModel) {
-        try {
-            const createdAt = new Date()
-            const blog: OutputBlogType | null = await BlogRepository.getBlogById(params.blogId)
-            if (blog) {
-                const newPost: PostType = {
-                    ...params,
-                    blogName: blog.name,
-                    createdAt: createdAt.toISOString()
-                }
-                const result = await postCollection.insertOne(newPost)
-                return result.insertedId.toString()
-            } else {
-                return null
-            }
-        } catch (err) {
-            return null
+    static async getAllPostsInBlog(blogId: string, sortData: SortBlogsDataType): Promise<OutputPostType> {
+        const sortBy = sortData.sortBy ?? 'createdAt'
+        const sortDirection = sortData.sortDirection ?? 'desc'
+        const pageNumber = sortData.pageNumber ?? 1
+        const pageSize = sortData.pageSize ?? 10
+
+        const posts = await postCollection
+            .find({blogId: blogId})
+            .sort(sortBy, sortDirection)
+            .skip((+pageNumber - 1) * +pageSize)
+            .limit(+pageSize)
+            .toArray()
+
+        const totalCount = await postCollection
+            .countDocuments({})
+
+        const pageCount = Math.ceil(totalCount / +pageSize)
+
+        return {
+            pagesCount: pageCount,
+            page: +pageNumber,
+            pageSize: +pageSize,
+            totalCount: +totalCount,
+            items: posts.map(postMapper)
         }
     }
 
-    static async updatePost(params: UpdatePostInputModel, id: string) {
-        const blog = await BlogRepository.getBlogById(params.blogId)
-        const result = await postCollection.updateOne({_id: new ObjectId(id)},
-            {
-                $set: {
-                    title: params.title,
-                    shortDescription: params.shortDescription,
-                    content: params.content,
-                    blogId: params.blogId
-                }
-            }
-            )
-        return !!result.matchedCount
+    static async createPost(newPost: PostType) {
+        const result = await postCollection.insertOne(newPost)
+        return result.acknowledged
+    }
+
+    static async createPostToBlog(newPost: PostType) {
+        const result = await postCollection.insertOne(newPost)
+        return result.acknowledged
+    }
+
+    static async updatePost(post: PostType) {
+        const result = await postCollection.updateOne({id: post.id}, {$set: {post}})
+        return result.matchedCount > 0
     }
 
     static async deletePost(id: string) {

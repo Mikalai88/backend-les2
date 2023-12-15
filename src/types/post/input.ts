@@ -13,3 +13,10 @@ export type UpdatePostInputModel = {
     content: string
     blogId: string
 }
+
+export type SortPostsDataType = {
+    sortBy?: string
+    sortDirection?: 'asc' | 'desc'
+    pageNumber?: number
+    pageSize?: number
+}

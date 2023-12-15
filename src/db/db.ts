@@ -31,7 +31,7 @@ export const runDb = async () => {
 
 import {VideoType} from "../types/video/output";
 import {BlogType, OutputBlogType} from "../types/blog/output";
-import {OutputPostType, PostType} from "../types/post/output";
+import {OutputItemsPostType, PostType} from "../types/post/output";
 
 // type DBType = {
 //     videos: VideoType[]
