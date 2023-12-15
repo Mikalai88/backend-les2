@@ -43,7 +43,7 @@ export class PostRepository {
 
     static async getPostById(id: string): Promise<OutputItemsPostType | null> {
         try {
-            const post = await postCollection.findOne({_id: new ObjectId(id)})
+            const post = await postCollection.findOne({id: id})
             if (!post) {
                 return null
             }
