@@ -17,6 +17,7 @@ export class BlogService {
             createdAt: createdAt.toISOString(),
             isMembership: false
         }
+        console.log(newBlog.id)
         const result = await BlogRepository.createBlog(newBlog)
         if (!result) {
             return null
