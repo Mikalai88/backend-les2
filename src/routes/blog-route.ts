@@ -101,7 +101,7 @@ blogRoute.post('/:id/posts', authMiddleware, postToBlogValidation(), async (req:
 
     const post = await PostRepository.getPostById(postId)
 
-    res.send(post)
+    return res.status(201).send(post)
 })
 
 blogRoute.put('/:id', authMiddleware, blogValidation(), async (req: RequestWithParamsAndBody<BlogParams, UpdateBlogInputModel>,
