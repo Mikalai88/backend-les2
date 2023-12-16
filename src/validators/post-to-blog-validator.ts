@@ -2,15 +2,15 @@ import {body} from "express-validator";
 import {BlogRepository} from "../repositories/blog-repository";
 import {inputModelValidation} from "../middlewares/inputModel/input-model-validation";
 
-const idValidation = body("id")
-    .isString()
-    .trim()
-    .withMessage('Incorrect id.')
-
-const blogNameValidation = body("blogName")
-    .isString()
-    .trim()
-    .withMessage('Incorrect blogName.')
+// const idValidation = body("id")
+//     .isString()
+//     .trim()
+//     .withMessage('Incorrect id.')
+//
+// const blogNameValidation = body("blogName")
+//     .isString()
+//     .trim()
+//     .withMessage('Incorrect blogName.')
 
 const createdAtValidation = body("createdAt")
     .isString()
@@ -36,24 +36,24 @@ const contentValidation = body("content")
     .isLength({min: 1, max: 1000})
     .withMessage('Incorrect content.')
 
-const blogIdValidation = body('blogId')
-    .isString()
-    .trim()
-    .custom(async (value) => {
-        const blog = await BlogRepository.getBlogById(value)
-        if (!blog) {
-            throw new Error("Incorrect blogId.")
-        }
-        return true
-    })
-    .withMessage("Incorrect blogId.")
+// const blogIdValidation = body('blogId')
+//     .isString()
+//     .trim()
+//     .custom(async (value) => {
+//         const blog = await BlogRepository.getBlogById(value)
+//         if (!blog) {
+//             throw new Error("Incorrect blogId.")
+//         }
+//         return true
+//     })
+//     .withMessage("Incorrect blogId.")
 
 export const postToBlogValidation = () => [
-    idValidation,
-    blogNameValidation,
+    // idValidation,
+    // blogNameValidation,
     createdAtValidation,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
-    blogIdValidation,
+    // blogIdValidation,
     inputModelValidation]
