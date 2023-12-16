@@ -17,9 +17,10 @@ import {
     SortBlogsDataType,
     UpdateBlogInputModel
 } from "../types/blog/input";
-import {OutputItemsPostType, OutputPostType} from "../types/post/output";
+import {OutputPostType} from "../types/post/output";
 import {PostRepository} from "../repositories/post-repository";
 import {BlogService} from "../domain/blog-service";
+import {postToBlogValidation} from "../validators/post-to-blog-validator";
 
 export const blogRoute = Router({})
 
@@ -85,7 +86,7 @@ blogRoute.post('/', authMiddleware, blogValidation(), async (req: RequestWithBod
     return res.status(201).send(newBlog)
 })
 
-blogRoute.post('/:id/posts', authMiddleware, async (req: RequestWithParamsAndBody<BlogParams, CreatePostForBlogInputModel>, res: Response) => {
+blogRoute.post('/:id/posts', authMiddleware, postToBlogValidation(), async (req: RequestWithParamsAndBody<BlogParams, CreatePostForBlogInputModel>, res: Response) => {
     const blogId = req.params.id
     const {title, shortDescription, content} = req.body
 
