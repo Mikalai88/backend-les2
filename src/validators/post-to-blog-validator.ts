@@ -42,11 +42,11 @@ const blogIdValidation = body('blogId')
     .custom(async (value) => {
         const blog = await BlogRepository.getBlogById(value)
         if (!blog) {
-            throw new Error("Incorrect blogId")
+            throw new Error("Incorrect blogId.")
         }
         return true
     })
-    .withMessage("Incorrect blogId")
+    .withMessage("Incorrect blogId.")
 
 export const postToBlogValidation = () => [
     idValidation,
