@@ -43,12 +43,16 @@ export class PostRepository {
 
     static async getPostById(id: string): Promise<OutputItemsPostType | null> {
         try {
-            const post = await postCollection.findOne({id: id})
+            console.log('ID / getPostById / PostRepository', id)
+
+            const post = await postCollection.findOne({id})
             if (!post) {
+                console.log('!post Repository')
                 return null
             }
             return postMapper(post)
         } catch (err) {
+            console.log('Error PostRepository', err)
             return null
         }
     }

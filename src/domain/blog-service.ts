@@ -17,7 +17,6 @@ export class BlogService {
             createdAt: createdAt.toISOString(),
             isMembership: false
         }
-        console.log(newBlog.id)
         const result = await BlogRepository.createBlog(newBlog)
         if (!result) {
             return null
@@ -29,6 +28,7 @@ export class BlogService {
         const blog = await BlogRepository.getBlogById(blogId)
 
         if (!blog) {
+            console.log("!blog")
             return null
         }
 
@@ -47,11 +47,14 @@ export class BlogService {
 
             const result = await PostRepository.createPostToBlog(newPost)
             if (!result) {
+                console.log("!result")
                 return null
             }
+            console.log('NewPost ID', newPost.id)
             return newPost.id
 
         } catch (err) {
+            console.log('err')
             return null
         }
     }

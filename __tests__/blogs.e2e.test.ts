@@ -1,10 +1,11 @@
-import {OutputBlogType} from "../src/types/blog/output";
+import {OutputItemsBlogType} from "../src/types/blog/output";
 
 const request = require('supertest')
 import {app} from "../src/settings";
+import {CreatePostInputModel} from "../src/types/post/input";
 
 describe('/blogs', () => {
-    let newBlog: OutputBlogType | null = null
+    let newBlog: OutputItemsBlogType | null = null
 
     beforeAll(async () => {
         await request(app)
@@ -12,7 +13,7 @@ describe('/blogs', () => {
     })
 
     it('GET blogs = []', async () => {
-        await request(app).get('/blogs').expect([])
+        await request(app).get('/blogs').expect({ pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] })
     })
 
     it('- POST does not create the blog with incorrect data (no name, no description, no websiteUrl)', async () => {
@@ -31,7 +32,7 @@ describe('/blogs', () => {
         })
 
         const res = await request(app).get('/blogs')
-        expect(res.body).toEqual([])
+        expect(res.body).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 0, "totalCount": 0})
     })
 
     it('- GET blog by ID with incorrect id', async () => {
@@ -55,6 +56,43 @@ describe('/blogs', () => {
         expect(data.name).toEqual(res.body.name)
     })
 
+    it('+ POST post with correct data for blog', async () => {
+        const blogData = {
+            name: 'New Blog Name',
+            description: "That's a new blog.",
+            websiteUrl: 'https://newblog.com'
+        }
+
+        const blogRes = await request(app)
+            .post('/blogs')
+            .auth('admin', "qwerty")
+            .send(blogData)
+
+        newBlog = blogRes.body
+
+        const postData: CreatePostInputModel = {
+            title: "string",
+            shortDescription: "string",
+            content: "string",
+            blogId: newBlog!.id
+        }
+
+        const postRes = await request(app)
+            .post('/blogs/' + newBlog!.id + '/posts')
+            .auth('admin', "qwerty")
+            .send(postData)
+
+        const newPost = postRes.body
+
+        console.log('NEW POST ID', postRes)
+
+        await request(app)
+            .get('/posts/' + newPost.id)
+            .expect(200, newPost)
+
+        expect(newPost.name).toEqual(postRes.body.name)
+    })
+
     it('+ GET blog by ID with correct id', async () => {
         await request(app)
             .get('/blogs/' + newBlog!.id)
@@ -68,7 +106,7 @@ describe('/blogs', () => {
             .send({name: '', description: '', websiteUrl: ''})
             .expect(400)
         const res = await request(app).get('/blogs')
-        expect(res.body[0]).toEqual(newBlog)
+        expect(res.body.items[0]).toEqual(newBlog)
     })
 
     it('+ PUT blog by ID with correct id and data', async () => {
@@ -82,13 +120,13 @@ describe('/blogs', () => {
             })
             .expect(204)
         const res = await request(app).get('/blogs')
-        expect(res.body[0]).toEqual({
+        expect(res.body.items[0]).toEqual({
             ...newBlog,
             name: 'New Blog Name2',
             description: "That's a new blog2.",
             websiteUrl: 'https://newblog2.com'
         })
-        newBlog = res.body[0]
+        newBlog = res.body.items[0]
     })
 
     it('- DELETE blog by incorrect ID', async () => {
@@ -98,7 +136,7 @@ describe('/blogs', () => {
             .expect(404)
 
         const res = await request(app).get('/blogs')
-        expect(res.body[0]).toEqual(newBlog)
+        expect(res.body.items[0]).toEqual(newBlog)
     })
 
     it('+ DELETE blog by correct ID, auth', async () => {
@@ -108,6 +146,6 @@ describe('/blogs', () => {
             .expect(204)
 
         const res = await request(app).get('/blogs')
-        expect(res.body.length).toBe(0)
+        expect(res.body.items.length).toBe(0)
     })
 })

@@ -87,17 +87,19 @@ blogRoute.post('/', authMiddleware, blogValidation(), async (req: RequestWithBod
 })
 
 blogRoute.post('/:id/posts', authMiddleware, postToBlogValidation(), async (req: RequestWithParamsAndBody<BlogParams, CreatePostForBlogInputModel>, res: Response) => {
+    console.log('Route Blog!')
     const blogId = req.params.id
     const {title, shortDescription, content} = req.body
 
     const postId: string | null = await BlogService.createPostToBlog(blogId,{title, shortDescription, content})
 
     if (!postId) {
+        console.log('postID', postId)
         res.sendStatus(404)
         return
     }
 
-    const post = PostRepository.getPostById(postId)
+    const post = await PostRepository.getPostById(postId)
 
     res.send(post)
 })

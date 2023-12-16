@@ -1,4 +1,3 @@
-import {WithId} from "mongodb";
 import {OutputItemsPostType, PostType} from "./output";
 
 export const postMapper = (post: PostType): OutputItemsPostType => {

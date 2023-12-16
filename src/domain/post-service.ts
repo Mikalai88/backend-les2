@@ -36,10 +36,12 @@ export class PostService {
     static async updatePost(params: UpdatePostInputModel, id: string) {
         const blog = await BlogRepository.getBlogById(params.blogId)
         if (!blog) {
+            console.log('!blog / updatePost / post-service')
             return null
         }
         const post = await PostRepository.getPostById(id)
         if (!post) {
+            console.log('!post / updatePost / post-service')
             return null
         }
         post.title = params.title
@@ -48,6 +50,10 @@ export class PostService {
         post.blogId = params.blogId
         post.blogName = blog.name
 
-        return await PostRepository.updatePost(post)
+        const res = await PostRepository.updatePost(post)
+
+        console.log("res / updatePost / post-service", post)
+
+        return res
     }
 }

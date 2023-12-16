@@ -22,6 +22,9 @@ postRoute.get('/', async (req: RequestWithQuery<SortPostsDataType>, res: Respons
 
 postRoute.get('/:id', async (req: RequestWithParams<PostParams>, res: Response<OutputItemsPostType>) => {
     const id = req.params.id
+
+    console.log('ID / postRoute.get/:id', id)
+
     const post = await PostRepository.getPostById(id)
     if (!post) {
         return res.sendStatus(404)
@@ -45,7 +48,12 @@ postRoute.put('/:id', authMiddleware, postValidation(), async (req: RequestWithP
     const id = req.params.id
     let {title, shortDescription, content, blogId}: UpdatePostInputModel = req.body
 
+    console.log('REQ.BODY', req.body)
+
     const isUpdated = await PostService.updatePost({title, shortDescription, content, blogId}, id)
+
+    console.log('isUpdated', isUpdated)
+
     isUpdated ? res.sendStatus(204) : res.sendStatus(404)
 })
 
