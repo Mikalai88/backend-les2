@@ -12,8 +12,6 @@ import {PostService} from "../domain/post-service";
 
 export class PostRepository {
     static async getAllPosts(sortData: SortPostsDataType): Promise<OutputPostType> {
-        // const posts: WithId<PostType>[] = await postCollection.find({}).toArray()
-        // return posts.map(postMapper)
 
         const sortBy = sortData.sortBy ?? 'createdAt'
         const sortDirection = sortData.sortDirection ?? 'desc'
@@ -43,16 +41,12 @@ export class PostRepository {
 
     static async getPostById(id: string): Promise<OutputItemsPostType | null> {
         try {
-            console.log('ID / getPostById / PostRepository', id)
-
             const post = await postCollection.findOne({id})
             if (!post) {
-                console.log('!post Repository')
                 return null
             }
             return postMapper(post)
         } catch (err) {
-            console.log('Error PostRepository', err)
             return null
         }
     }

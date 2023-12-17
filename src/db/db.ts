@@ -14,6 +14,7 @@ const db = client.db('node-blog')
 export const blogCollection = db.collection<BlogType>('blog')
 export const postCollection = db.collection<PostType>('post')
 export const videoCollection = db.collection<VideoType>('video')
+export const userCollection = db.collection<UserType>('user')
 
 export const runDb = async () => {
     try {
@@ -32,6 +33,7 @@ export const runDb = async () => {
 import {VideoType} from "../types/video/output";
 import {BlogType, OutputBlogType} from "../types/blog/output";
 import {OutputItemsPostType, PostType} from "../types/post/output";
+import {UserType} from "../types/user/output";
 
 // type DBType = {
 //     videos: VideoType[]

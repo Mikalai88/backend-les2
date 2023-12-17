@@ -23,8 +23,6 @@ postRoute.get('/', async (req: RequestWithQuery<SortPostsDataType>, res: Respons
 postRoute.get('/:id', async (req: RequestWithParams<PostParams>, res: Response<OutputItemsPostType>) => {
     const id = req.params.id
 
-    console.log('ID / postRoute.get/:id', id)
-
     const post = await PostRepository.getPostById(id)
     if (!post) {
         return res.sendStatus(404)
