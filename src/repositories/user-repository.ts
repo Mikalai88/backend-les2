@@ -8,6 +8,7 @@ import {OutputItemsBlogType} from "../types/blog/output";
 
 export class UserRepository {
     static async getAllUsers(sortData: SortUsersDataType): Promise<OutputUserType> {
+        console.log('SORT DATA', sortData)
         const searchLoginTerm = sortData.searchLoginTerm ?? null
         const searchEmailTerm = sortData.searchEmailTerm ?? null
         const sortBy = sortData.sortBy ?? 'createdAt'
@@ -15,36 +16,18 @@ export class UserRepository {
         const pageNumber = sortData.pageNumber ?? 1
         const pageSize = sortData.pageSize ?? 10
 
-        let filterArray: any = []
-        let filter = {$or: filterArray}
-
-        if (searchLoginTerm) {
-            filterArray.push({
-                name: {
-                    $regex: searchLoginTerm,
-                    $options: 'i'
-                }
-            })
-        }
-
-        if (searchEmailTerm) {
-            filterArray.push({
-                name: {
-                    $regex: searchEmailTerm,
-                    $options: 'i'
-                }
-            })
-        }
+        const searchEmail = searchEmailTerm !== null ? {email: {$regex: searchEmailTerm, $options: "ix"}} : {}
+        const searchLogin = searchLoginTerm !== null ? {login: {$regex: searchLoginTerm, $options: 'ix'}} : {}
 
         const users = await userCollection
-            .find(filter)
+            .find({$or: [searchEmail, searchLogin]})
             .sort(sortBy, sortDirection)
             .skip((+pageNumber - 1) * +pageSize)
             .limit(+pageSize)
             .toArray()
 
         const totalCount = await userCollection
-            .countDocuments(filter)
+            .countDocuments({$or: [searchEmail, searchLogin]})
 
         const pageCount = Math.ceil(totalCount / +pageSize)
 
