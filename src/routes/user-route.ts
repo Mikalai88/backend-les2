@@ -9,6 +9,7 @@ import {UserRepository} from "../repositories/user-repository";
 import {BlogParams} from "../types/blog/input";
 import {blogRoute} from "./blog-route";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
+import {userCreateValidator} from "../validators/user-validator";
 
 export const userRoute = Router({})
 
@@ -25,7 +26,7 @@ userRoute.get('/', authMiddleware, async (req: RequestWithQuery<SortUsersDataTyp
     res.status(200).send(users)
 })
 
-userRoute.post('/', authMiddleware, async (req: Request, res: Response) => {
+userRoute.post('/', userCreateValidator(), authMiddleware, async (req: Request, res: Response) => {
     const userId = await usersService.createUser(req.body.login, req.body.email, req.body.password)
     if (!userId) {
         res.sendStatus(404)
