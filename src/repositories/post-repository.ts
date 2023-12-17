@@ -63,6 +63,8 @@ export class PostRepository {
         const pageNumber = sortData.pageNumber ?? 1
         const pageSize = sortData.pageSize ?? 10
 
+
+
         const posts = await postCollection
             .find({blogId: blogId})
             .sort(sortBy, sortDirection)
@@ -71,7 +73,7 @@ export class PostRepository {
             .toArray()
 
         const totalCount = await postCollection
-            .countDocuments({})
+            .countDocuments({blogId: blogId})
 
         const pageCount = Math.ceil(totalCount / +pageSize)
 
