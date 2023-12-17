@@ -95,7 +95,7 @@ export class PostRepository {
     }
 
     static async updatePost(post: PostType) {
-        const result = await postCollection.updateOne({id: post.id}, {$set: {post}})
+        const result = await postCollection.updateOne({id: post.id}, {$set: post})
         return result.matchedCount > 0
     }
 
