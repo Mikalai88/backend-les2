@@ -8,7 +8,6 @@ import {OutputItemsBlogType} from "../types/blog/output";
 
 export class UserRepository {
     static async getAllUsers(sortData: SortUsersDataType): Promise<OutputUserType> {
-        console.log('SORT DATA', sortData)
         const searchLoginTerm = sortData.searchLoginTerm ?? null
         const searchEmailTerm = sortData.searchEmailTerm ?? null
         const sortBy = sortData.sortBy ?? 'createdAt'
@@ -67,7 +66,7 @@ export class UserRepository {
     }
 
     static async findByLoginOrEmail(loginOrEmail: string) {
-        const user = await userCollection.findOne({$or: [{email: loginOrEmail}, {userName: loginOrEmail}]})
+        const user = await userCollection.findOne({$or: [{userEmail: loginOrEmail}, {userLogin: loginOrEmail}]})
         return user
     }
 
