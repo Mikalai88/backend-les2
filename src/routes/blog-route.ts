@@ -40,8 +40,9 @@ blogRoute.get('/', async (req: RequestWithQuery<SortBlogsDataType>,
 blogRoute.get('/:id/posts', async (req: RequestWithParamsAndQuery<BlogParams, SortBlogsDataType>,
                           res: Response) => {
     const blogId = req.params.id // blogIdInParamsMiddleware
+    const blog = await BlogRepository.getBlogById(blogId)
 
-    if (!blogId) {
+    if (!blogId || !blog) {
         res.sendStatus(404)
         return
     }
