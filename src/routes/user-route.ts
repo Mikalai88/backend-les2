@@ -26,7 +26,7 @@ userRoute.get('/', authMiddleware, async (req: RequestWithQuery<SortUsersDataTyp
     res.status(200).send(users)
 })
 
-userRoute.post('/', userCreateValidator(), authMiddleware, async (req: Request, res: Response) => {
+userRoute.post('/', authMiddleware, userCreateValidator(), async (req: Request, res: Response) => {
     const userId = await usersService.createUser(req.body.login, req.body.email, req.body.password)
     if (!userId) {
         res.sendStatus(404)
