@@ -15,8 +15,10 @@ export class UserRepository {
         const pageNumber = sortData.pageNumber ?? 1
         const pageSize = sortData.pageSize ?? 10
 
-        const searchEmail = searchEmailTerm !== null ? {email: {$regex: searchEmailTerm, $options: "ix"}} : {}
-        const searchLogin = searchLoginTerm !== null ? {login: {$regex: searchLoginTerm, $options: 'ix'}} : {}
+        const searchEmail = searchEmailTerm !== null ? {userEmail: {$regex: searchEmailTerm, $options: "i"}} : {}
+        const searchLogin = searchLoginTerm !== null ? {userLogin: {$regex: searchLoginTerm, $options: 'i'}} : {}
+
+        console.log("FILTER", JSON.stringify({$or: [searchEmail, searchLogin]}))
 
         const users = await userCollection
             .find({$or: [searchEmail, searchLogin]})
@@ -29,6 +31,8 @@ export class UserRepository {
             .countDocuments({$or: [searchEmail, searchLogin]})
 
         const pageCount = Math.ceil(totalCount / +pageSize)
+
+
 
         return {
             pagesCount: pageCount,
