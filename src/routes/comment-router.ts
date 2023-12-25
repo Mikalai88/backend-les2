@@ -20,8 +20,8 @@ export const resultCodeHandler = <T>(obj: ResultCodeHandler<T>) => {
     }
 }
 
-commentRouter.get('/:id', checkAuthUser, async (req: RequestWithParams<{ id: string }>, res) => {
-        const comment: CommentViewModel | null = await CommentsQueryRepository.findCommentById(req.params.id, req.user?.id)
+commentRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res) => {
+        const comment: CommentViewModel | null = await CommentsQueryRepository.findCommentById(req.params.id)
         if(!comment) {
             return res.sendStatus(404)
         }
