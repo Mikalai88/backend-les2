@@ -40,7 +40,7 @@ commentRouter.put('/:id', authJWTMiddleware, commentsValidationMiddleware(), asy
     }
     return res.sendStatus(500)
 })
-commentRouter.delete('/id', authJWTMiddleware, async (req: Request, res: Response) => {
+commentRouter.delete('/:id', authJWTMiddleware, async (req: Request, res: Response) => {
     const resultDelete = await commentService.deleteComment(req.params.id, req.user!.id)
     if(!resultDelete.success) {
         return res.sendStatus(resultCodeHandler(resultDelete))
