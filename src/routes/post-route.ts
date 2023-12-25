@@ -1,11 +1,22 @@
 import {Router, Request, Response} from "express";
 import {PostRepository} from "../repositories/post-repository";
-import {authMiddleware} from "../middlewares/auth/auth-middleware";
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../types/common";
+import {authJWTMiddleware, authMiddleware, checkAuthUser} from "../middlewares/auth/auth-middleware";
+import {
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithParamsAndQuery,
+    RequestWithQuery
+} from "../types/common";
 import {postValidation} from "../validators/post-validator";
 import {CreatePostInputModel, PostParams, SortPostsDataType, UpdatePostInputModel} from "../types/post/input";
 import {OutputItemsPostType, OutputPostType, PostType} from "../types/post/output";
 import {PostService} from "../domain/post-service";
+import {idValidationMiddleware} from "../middlewares/id-validation-middleware";
+import {commentRepository} from "../repositories/comment-repository";
+import {CommentPaginationViewModel} from "../types/comment/input";
+import {commentsValidationMiddleware} from "../validators/comments-validator";
+import {commentService} from "../domain/comment-service";
 
 export const postRoute = Router({})
 
@@ -30,6 +41,22 @@ postRoute.get('/:id', async (req: RequestWithParams<PostParams>, res: Response<O
     return res.status(200).send(post!)
 })
 
+export interface CommentPaginationModel {
+    sortBy?: string
+    sortDirection?: "asc" | "desc"
+    pageNumber?: number
+    pageSize?: number
+}
+
+postRoute.get('/:id/comments', checkAuthUser, idValidationMiddleware, async (req: RequestWithParamsAndQuery<{ id: string }, CommentPaginationModel>,
+                                                                       res: Response) => {
+    const comment: CommentPaginationViewModel | null = await commentRepository.findAllCommentByPostId(req.query, req.params.id, req.user!.id)
+    if (!comment) {
+        return res.sendStatus(404)
+    }
+    return res.status(200).send(comment)
+})
+
 postRoute.post('/', authMiddleware, postValidation(), async (req: RequestWithBody<CreatePostInputModel>,
                                                              res: Response<PostType | null>) => {
     let {title, shortDescription, content, blogId}: CreatePostInputModel = req.body
@@ -39,6 +66,18 @@ postRoute.post('/', authMiddleware, postValidation(), async (req: RequestWithBod
     }
     const newPost = await PostRepository.getPostById(postId)
     return res.status(201).send(newPost)
+})
+
+postRoute.post('/:id/comments', authJWTMiddleware, idValidationMiddleware, commentsValidationMiddleware, async (req: Request, res: Response) => {
+    const newCommentId: string | null = await commentService.createNewComment(req.body, req.user!.id, req.params.id)
+    if (!newCommentId) {
+        return res.sendStatus(404)
+    }
+    const newComment = await commentRepository.findCommentById(newCommentId)
+    if (!newComment) {
+        return res.sendStatus(404)
+    }
+    return res.status(201).send(newComment)
 })
 
 postRoute.put('/:id', authMiddleware, postValidation(), async (req: RequestWithParamsAndBody<PostParams, UpdatePostInputModel>,

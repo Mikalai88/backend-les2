@@ -1,5 +1,10 @@
 import {commentRepository} from "../repositories/comment-repository";
 import {commentCollection} from "../db/db";
+import {OutputItemsUserType} from "../types/user/output";
+import {UserRepository} from "../repositories/user-repository";
+import {PostRepository} from "../repositories/post-repository";
+import {CommentDbModel} from "../types/comment/output";
+import {CommentClass} from "../classes/comment-class";
 
 export interface ResultCodeHandler<T> {
     success: boolean
@@ -16,6 +21,26 @@ export const resultCodeMap = <T>(success: boolean, data: T, error?: string) => {
 };
 
 export class commentService {
+    static async createNewComment(body: {content: string}, userId: string, postId: string): Promise<string | null> {
+        const user: OutputItemsUserType | null = await UserRepository.findUserById(userId)
+        if (!user) {
+            return null
+        }
+        const post = await PostRepository.getPostById(postId)
+        if (!post) {
+            return null
+        }
+        const userDto = {
+            userId: user.id,
+            userLogin: user.login
+        }
+        const newComment: CommentDbModel = new CommentClass(body.content, userDto, postId)
+        const result = await commentRepository.createNewComment(newComment)
+        if (!result) {
+            return null
+        }
+        return newComment.id
+    }
     static async updateComments(body: {content: string}, userId: string, commentId: string): Promise<ResultCodeHandler<null>> {
         const comment = await commentRepository.findCommentById(commentId)
         if (!comment) {
