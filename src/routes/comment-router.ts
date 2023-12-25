@@ -22,7 +22,6 @@ export const resultCodeHandler = <T>(obj: ResultCodeHandler<T>) => {
 }
 
 commentRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res) => {
-    console.log("req.params.id", req.params.id)
         const comment: CommentViewModel | null = await CommentsQueryRepository.findCommentById(req.params.id)
     console.log("comment", comment)
         if(!comment) {
@@ -32,7 +31,8 @@ commentRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res) =>
     })
 
 commentRouter.put('/:id', authJWTMiddleware, commentsValidationMiddleware(), async (req: Request, res: Response) => {
-    const resultUpdate = await commentService.updateComments(req.body, req.user!.id, req.params.id)
+    const resultUpdate = await commentService.updateComments(req.body.content, req.user!.id, req.params.id)
+    console.log("req.body", req.body)
     if (resultUpdate.success) {
         return res.sendStatus(204)
     }
