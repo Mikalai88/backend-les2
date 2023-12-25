@@ -16,7 +16,8 @@ authRouter.post('/login', userValidation(), async (req: Request, res: Response) 
         return
     }
     const token = await JwtService.createAccessToken(user)
-    res.status(200).send(token)
+    console.log("TOKEN", token)
+    res.status(200).send({accessToken: token})
 })
 
 authRouter.get('/me', authJWTMiddleware, async (req: Request, res: Response) => {

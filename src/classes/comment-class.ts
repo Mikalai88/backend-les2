@@ -10,7 +10,9 @@ export class CommentClass {
             userId: string;
             userLogin: string;
         },
-        public postId: string) {
+        public postId: string)
+
+    {
         this.createdAt = new Date().toISOString()
         this.id = randomUUID()
     }
