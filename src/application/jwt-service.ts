@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import {settings} from "../settings";
 import {ObjectId, WithId} from "mongodb";
