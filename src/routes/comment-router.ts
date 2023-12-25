@@ -6,6 +6,7 @@ import {CommentViewModel} from "../types/comment/output";
 import {CommentsQueryRepository} from "../repositories/query-repositories/comments-query-repository";
 import {commentsValidationMiddleware} from "../validators/comments-validator";
 import {commentService, ResultCodeHandler} from "../domain/comment-service";
+import {log} from "util";
 
 export const commentRouter = Router({})
 
@@ -21,7 +22,9 @@ export const resultCodeHandler = <T>(obj: ResultCodeHandler<T>) => {
 }
 
 commentRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res) => {
+    console.log("req.params.id", req.params.id)
         const comment: CommentViewModel | null = await CommentsQueryRepository.findCommentById(req.params.id)
+    console.log("comment", comment)
         if(!comment) {
             return res.sendStatus(404)
         }
