@@ -40,3 +40,5 @@ userRoute.delete('/:id', authMiddleware, async (req: RequestWithParams<BlogParam
     const deleteResult = await usersService.deleteUser(id)
     deleteResult ? res.sendStatus(204) : res.sendStatus(404)
 })
+
+//

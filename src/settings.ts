@@ -17,6 +17,10 @@ app.use('/posts', postRoute)
 app.use('/users', userRoute)
 app.use('/auth', authRouter)
 
+export const settings = {
+    JWT_SECRET: process.env.JWT_SECRET || '123'
+}
+
 
 
 
