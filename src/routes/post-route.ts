@@ -48,9 +48,9 @@ export interface CommentPaginationModel {
     pageSize?: number
 }
 
-postRoute.get('/:id/comments', checkAuthUser, idValidationMiddleware, async (req: RequestWithParamsAndQuery<{ id: string }, CommentPaginationModel>,
+postRoute.get('/:id/comments', async (req: RequestWithParamsAndQuery<{ id: string }, CommentPaginationModel>,
                                                                        res: Response) => {
-    const comment: CommentPaginationViewModel | null = await commentRepository.findAllCommentByPostId(req.query, req.params.id, req.user!.id)
+    const comment: CommentPaginationViewModel | null = await commentRepository.findAllCommentByPostId(req.query, req.params.id)
     if (!comment) {
         return res.sendStatus(404)
     }

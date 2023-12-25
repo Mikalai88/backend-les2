@@ -56,7 +56,7 @@ export class commentRepository {
         return resultDelete.deletedCount === 1
     }
 
-    static async findAllCommentByPostId(query: CommentPaginationModel, postId: string, userId?: string | null): Promise<CommentPaginationViewModel | null> {
+    static async findAllCommentByPostId(query: CommentPaginationModel, postId: string): Promise<CommentPaginationViewModel | null> {
         const aggregationResult = this._aggregationOfQueryParameters(query)
         const {sortBy, sortDirection, pageNumber, pageSize} = aggregationResult
 
