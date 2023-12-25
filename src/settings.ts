@@ -10,6 +10,13 @@ export const app = express()
 
 app.use(express.json())
 
+app.use((req, res, next) => {
+
+    console.log(req.body);
+
+    next(); // Переход к следующему middleware
+});
+
 app.use('/testing', testingRoute)
 // app.use('/videos', videoRoute)
 app.use('/blogs', blogRoute)

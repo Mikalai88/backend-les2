@@ -68,11 +68,13 @@ postRoute.post('/', authMiddleware, postValidation(), async (req: RequestWithBod
     return res.status(201).send(newPost)
 })
 
-postRoute.post('/:id/comments', authJWTMiddleware, idValidationMiddleware, commentsValidationMiddleware, async (req: Request, res: Response) => {
-    const newCommentId: string | null = await commentService.createNewComment(req.body, req.user!.id, req.params.id)
+postRoute.post('/:id/comments', authJWTMiddleware, commentsValidationMiddleware(), async (req: RequestWithParamsAndBody<{id: string},{content: string}>, res: Response) => {
+    console.log("req.body", req.body)
+    const newCommentId: string | null = await commentService.createNewComment(req.body.content, req.user!.id, req.params.id)
     if (!newCommentId) {
         return res.sendStatus(404)
     }
+    console.log("newCommentId", newCommentId)
     const newComment = await commentRepository.findCommentById(newCommentId)
     if (!newComment) {
         return res.sendStatus(404)

@@ -7,4 +7,4 @@ const commentsValidationRule = body('content')
     .notEmpty().withMessage('Empty.')
     .isLength({min: 20 , max: 300}).withMessage('Invalid length.')
 
-export const commentsValidationMiddleware = [commentsValidationRule, inputModelValidation]
+export const commentsValidationMiddleware = () => [commentsValidationRule, inputModelValidation]

@@ -20,15 +20,14 @@ export const resultCodeHandler = <T>(obj: ResultCodeHandler<T>) => {
     }
 }
 
-commentRouter
-    .get('/:id', checkAuthUser, idValidationMiddleware, async (req: RequestWithParams<{ id: string }>, res) => {
+commentRouter.get('/:id', checkAuthUser, async (req: RequestWithParams<{ id: string }>, res) => {
         const comment: CommentViewModel | null = await CommentsQueryRepository.findCommentById(req.params.id, req.user?.id)
         if(!comment) {
             return res.sendStatus(404)
         }
         return res.status(200).send(comment)
     })
-    .put('/:id', authJWTMiddleware, idValidationMiddleware, commentsValidationMiddleware, async (req: Request, res: Response) => {
+commentRouter.put('/:id', authJWTMiddleware, commentsValidationMiddleware(), async (req: Request, res: Response) => {
     const resultUpdate = await commentService.updateComments(req.body, req.user!.id, req.params.id)
     if (resultUpdate.success) {
         return res.sendStatus(204)
@@ -41,7 +40,7 @@ commentRouter
     }
     return res.sendStatus(500)
 })
-.delete('/id', authJWTMiddleware, idValidationMiddleware, async (req: Request, res: Response) => {
+commentRouter.delete('/id', authJWTMiddleware, async (req: Request, res: Response) => {
     const resultDelete = await commentService.deleteComment(req.params.id, req.user!.id)
     if(!resultDelete.success) {
         return res.sendStatus(resultCodeHandler(resultDelete))

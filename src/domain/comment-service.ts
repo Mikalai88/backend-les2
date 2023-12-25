@@ -21,7 +21,7 @@ export const resultCodeMap = <T>(success: boolean, data: T, error?: string) => {
 };
 
 export class commentService {
-    static async createNewComment(body: {content: string}, userId: string, postId: string): Promise<string | null> {
+    static async createNewComment(content: string, userId: string, postId: string): Promise<string | null> {
         const user: OutputItemsUserType | null = await UserRepository.findUserById(userId)
         if (!user) {
             return null
@@ -34,14 +34,14 @@ export class commentService {
             userId: user.id,
             userLogin: user.login
         }
-        const newComment: CommentDbModel = new CommentClass(body.content, userDto, postId)
+        const newComment: CommentDbModel = new CommentClass(content, userDto, postId)
         const result = await commentRepository.createNewComment(newComment)
         if (!result) {
             return null
         }
         return newComment.id
     }
-    static async updateComments(body: {content: string}, userId: string, commentId: string): Promise<ResultCodeHandler<null>> {
+    static async updateComments(content: string, userId: string, commentId: string): Promise<ResultCodeHandler<null>> {
         const comment = await commentRepository.findCommentById(commentId)
         if (!comment) {
             return resultCodeMap(false, null, "Not_Found")
@@ -49,7 +49,7 @@ export class commentService {
         if (userId !== comment.commentatorInfo.userId) {
             return resultCodeMap(false, null, "Forbidden")
         }
-        const updateComment = {content: body.content}
+        const updateComment = {content: content}
         const resultUpdate = await commentRepository.updateCommentById(updateComment, commentId)
         if (!resultUpdate) {
             return resultCodeMap(false, null, "Error_Server")
