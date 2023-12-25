@@ -6,26 +6,13 @@ import {userCollection} from "../../db/db";
 const login = "admin"
 const password = "qwerty"
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    console.log("HEADERS", req.headers['authorization'])
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
     if (req.headers['authorization'] !== "Basic YWRtaW46cXdlcnR5") {
-        res.sendStatus(401)
-        return
+        return res.sendStatus(401)
     }
 
-    // const token = req.headers.authorization.split('')[1]
-    //
-    // const userId = await JwtService.verifyJWT(token)
-    //
-    // console.log("USER ID", userId)
-    //
-    // if (userId) {
-    //     req.user = await usersService.findUserById(userId)
-    //     next()
-    // }
-
-    next()
+    return next()
 }
 
 export const authJWTMiddleware = async (req: Request, res: Response, next: NextFunction) => {
