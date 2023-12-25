@@ -6,6 +6,8 @@ const login = "admin"
 const password = "qwerty"
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    console.log("HEADERS", req.headers['authorization'])
+
     if (req.headers['authorization'] !== "Basic YWRtaW46cXdlcnR5") {
         res.sendStatus(401)
         return
@@ -14,6 +16,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     const token = req.headers.authorization.split('')[1]
 
     const userId = await JwtService.verifyJWT(token)
+
+    console.log("USER ID", userId)
 
     if (userId) {
         req.user = await usersService.findUserById(userId)
