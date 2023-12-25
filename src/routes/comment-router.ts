@@ -1,5 +1,5 @@
 import {Router, Request, Response} from "express";
-import {authMiddleware, checkAuthUser} from "../middlewares/auth/auth-middleware";
+import {authJWTMiddleware, authMiddleware, checkAuthUser} from "../middlewares/auth/auth-middleware";
 import {idValidationMiddleware} from "../middlewares/id-validation-middleware";
 import {RequestWithParams} from "../types/common";
 import {CommentViewModel} from "../types/comment/output";
@@ -28,7 +28,7 @@ commentRouter
         }
         return res.status(200).send(comment)
     })
-    .put('/:id', authMiddleware, idValidationMiddleware, commentsValidationMiddleware, async (req: Request, res: Response) => {
+    .put('/:id', authJWTMiddleware, idValidationMiddleware, commentsValidationMiddleware, async (req: Request, res: Response) => {
     const resultUpdate = await commentService.updateComments(req.body, req.user!.id, req.params.id)
     if (resultUpdate.success) {
         return res.sendStatus(204)
@@ -41,7 +41,7 @@ commentRouter
     }
     return res.sendStatus(500)
 })
-.delete('/id', authMiddleware, idValidationMiddleware, async (req: Request, res: Response) => {
+.delete('/id', authJWTMiddleware, idValidationMiddleware, async (req: Request, res: Response) => {
     const resultDelete = await commentService.deleteComment(req.params.id, req.user!.id)
     if(!resultDelete.success) {
         return res.sendStatus(resultCodeHandler(resultDelete))

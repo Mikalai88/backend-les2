@@ -5,6 +5,7 @@ import {JwtService} from "../application/jwt-service";
 import {OutputItemsUserType, UserType} from "../types/user/output";
 import {UserRepository} from "../repositories/user-repository";
 import {mapAuthUser} from "../utils/map-me-user";
+import {authJWTMiddleware} from "../middlewares/auth/auth-middleware";
 
 export const authRouter = Router({})
 
@@ -18,7 +19,7 @@ authRouter.post('/login', userValidation(), async (req: Request, res: Response) 
     res.status(204).send(token)
 })
 
-authRouter.get('/me', async (req: Request, res: Response) => {
+authRouter.get('/me', authJWTMiddleware, async (req: Request, res: Response) => {
     const user: OutputItemsUserType | null = await UserRepository.findUserById(req.user!.id)
     if (!user) {
         return res.sendStatus(401)
