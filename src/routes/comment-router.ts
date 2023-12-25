@@ -27,6 +27,7 @@ commentRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res) =>
         }
         return res.status(200).send(comment)
     })
+
 commentRouter.put('/:id', authJWTMiddleware, commentsValidationMiddleware(), async (req: Request, res: Response) => {
     const resultUpdate = await commentService.updateComments(req.body, req.user!.id, req.params.id)
     if (resultUpdate.success) {
