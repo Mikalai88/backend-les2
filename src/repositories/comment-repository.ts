@@ -39,7 +39,11 @@ export class commentRepository {
         return resultInsert.acknowledged
     }
     static async findCommentById(id: string): Promise<CommentViewModel | null> {
-        return commentCollection.findOne({id: id})
+        const comment = await commentCollection.findOne({id: id})
+        if (!comment) {
+            return null
+        }
+        return mapComment(comment)
     }
 
     static async updateCommentById(newComment: {content: string}, commentId: string): Promise<boolean> {

@@ -68,7 +68,7 @@ postRoute.post('/', authMiddleware, postValidation(), async (req: RequestWithBod
     return res.status(201).send(newPost)
 })
 
-postRoute.post('/:id/comments', authJWTMiddleware, commentsValidationMiddleware(), async (req: RequestWithParamsAndBody<{id: string},{content: string}>, res: Response) => {
+postRoute.post('/:id/comments', authJWTMiddleware, commentsValidationMiddleware(), async (req: Request, res: Response) => {
     console.log("req.body", req.body)
     const newCommentId: string | null = await commentService.createNewComment(req.body.content, req.user!.id, req.params.id)
     if (!newCommentId) {

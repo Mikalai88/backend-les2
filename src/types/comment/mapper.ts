@@ -1,7 +1,8 @@
 
 import {CommentViewModel} from "./output";
+import {WithId} from "mongodb";
 
-export const mapComment = (comment: CommentViewModel) => {
+export const mapComment = (comment: WithId<CommentViewModel>) => {
     return {
         id: comment.id,
         content: comment.content,
