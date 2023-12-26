@@ -14,7 +14,7 @@ export class UserRepository {
         const pageNumber = sortData.pageNumber ?? 1
         const pageSize = sortData.pageSize ?? 10
 
-        const searchEmail = searchEmailTerm !== null ? {userEmail: {$regex: searchEmailTerm, $options: "i"}} : {}
+        const searchEmail = searchEmailTerm !== null ? {email: {$regex: searchEmailTerm, $options: "i"}} : {}
         const searchLogin = searchLoginTerm !== null ? {userLogin: {$regex: searchLoginTerm, $options: 'i'}} : {}
 
         console.log("FILTER", JSON.stringify({$or: [searchEmail, searchLogin]}))
@@ -67,7 +67,7 @@ export class UserRepository {
     }
 
     static async findByLoginOrEmail(loginOrEmail: string) {
-        const user = await userCollection.findOne({$or: [{userEmail: loginOrEmail}, {userLogin: loginOrEmail}]})
+        const user = await userCollection.findOne({$or: [{email: loginOrEmail}, {userLogin: loginOrEmail}]})
         return user
     }
 
@@ -75,11 +75,11 @@ export class UserRepository {
 
         console.log('BODY Email UserRepository', body.email)
 
-        return userCollection.findOne({'emailConfirmation.userEmail': body.email})
+        return userCollection.findOne({'emailConfirmation.email': body.email})
     }
 
     static async resendingEmail(newConfirmationData: EmailConfirmationModel) : Promise<boolean> {
-        const resultUpdateConfirmData = await userCollection.updateOne({userEmail: newConfirmationData.userEmail}, {$set: newConfirmationData}) // !!! userEmail ? email
+        const resultUpdateConfirmData = await userCollection.updateOne({email: newConfirmationData.email}, {$set: newConfirmationData}) // !!! userEmail ? email
         return resultUpdateConfirmData.acknowledged
     }
 

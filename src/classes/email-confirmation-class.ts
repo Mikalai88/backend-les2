@@ -5,7 +5,7 @@ export class EmailConfirmationClass {
     confirmationCode: string
     expirationDate: Date
     isConfirmed: boolean
-    constructor(public userEmail: string) {
+    constructor(public email: string) {
         this.confirmationCode = uuidv4()
         this.expirationDate = add(new Date(), {minutes: 5})
         this.isConfirmed = false

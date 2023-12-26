@@ -5,7 +5,7 @@ export const userMapper = (user: UserType): OutputItemsUserType => {
     return {
         id: user.id,
         login: user.userLogin,
-        email: user.emailConfirmation.userEmail,
+        email: user.emailConfirmation.email,
         createdAt: user.createdAt
     }
 }

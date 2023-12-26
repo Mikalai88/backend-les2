@@ -17,7 +17,7 @@ userRoute.get('/', authMiddleware, async (req: RequestWithQuery<SortUsersDataTyp
     const sortData = {
         searchLoginTerm: req.query.searchLoginTerm,
         searchEmailTerm: req.query.searchEmailTerm,
-        sortBy: req.query.sortBy === 'login' ? 'userLogin' : req.query.sortBy === 'email' ? 'userEmail' : req.query.sortBy,
+        sortBy: req.query.sortBy === 'login' ? 'userLogin' : req.query.sortBy === 'email' ? 'email' : req.query.sortBy,
         sortDirection: req.query.sortDirection,
         pageNumber: req.query.pageNumber,
         pageSize: req.query.pageSize

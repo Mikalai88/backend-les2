@@ -1,5 +1,5 @@
 export interface EmailConfirmationModel {
-    userEmail: string
+    email: string
     confirmationCode: string
     expirationDate: Date
     isConfirmed: boolean
