@@ -25,11 +25,11 @@ export const ExpiredCodeMessage = {
     ]
 }
 
-export const EmailConfirmed = {
+export const CodeConfirmed = {
     errorsMessages: [
         {
-            message: "email confirmed",
-            field: "email"
+            message: "code confirmed",
+            field: "code"
         }
     ]
 }

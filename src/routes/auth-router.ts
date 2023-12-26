@@ -16,7 +16,7 @@ import {CodeConfirmModel, UserInputModel} from "../types/user/input";
 import {HTTP_STATUS} from "../enums/enum-HTTP";
 import {limitRequestMiddleware} from "../middlewares/auth/limit-request";
 import {EmailResending} from "../types/email";
-import {CodeIncorrectMessage, EmailConfirmed, EmailNotFound, ExpiredCodeMessage} from "../enums/errors-messages";
+import {CodeIncorrectMessage, CodeConfirmed, EmailNotFound, ExpiredCodeMessage} from "../enums/errors-messages";
 import {body} from "express-validator";
 
 export const authRouter = Router({})
@@ -53,7 +53,7 @@ authRouter.post('/registration-confirmation', limitRequestMiddleware, codeValida
         return res.status(HTTP_STATUS.Bad_request).json(ExpiredCodeMessage)
     }
     if (isConfirm.error === "Is_Confirmed") {
-        return res.status(HTTP_STATUS.Bad_request).json(EmailConfirmed)
+        return res.status(HTTP_STATUS.Bad_request).json(CodeConfirmed)
     }
     return res.sendStatus(HTTP_STATUS.No_content)
 })
@@ -66,7 +66,7 @@ authRouter.post('/registration-email-resending', limitRequestMiddleware, emailVa
         return res.status(HTTP_STATUS.Bad_request).send(EmailNotFound)
     }
     if (resendingResult.error === "Is_Confirmed") {
-        return res.status(HTTP_STATUS.Bad_request).send(EmailConfirmed)
+        return res.status(HTTP_STATUS.Bad_request).send(CodeConfirmed)
     }
     if (resendingResult.error === "Error_Server") {
         return res.status(HTTP_STATUS.Server_error)
