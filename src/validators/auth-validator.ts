@@ -19,7 +19,7 @@ const registrationUserEmailValidationRule = body('email')
     .isLength({min: 6, max: 30}).withMessage(ERRORS_MESSAGE.IS_LENGTH)
     .isEmail().withMessage(ERRORS_MESSAGE.PATTERN_INCORRECT)
     .custom(async email => {
-        const user = await userCollection.findOne({email: email})
+        const user = await userCollection.findOne({userEmail: email})
         if(user) {
             throw new Error(ERRORS_MESSAGE.FOUND)
         }

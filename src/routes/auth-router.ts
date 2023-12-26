@@ -34,9 +34,7 @@ authRouter.post('/login', userValidation(), async (req: Request, res: Response) 
 
 authRouter.post('/registration', limitRequestMiddleware, userRegistrationValidation(), async (req: RequestWithBody<UserInputModel>, res: Response) => {
     const resultRegistration = await usersService.createUser(req.body.login, req.body.email, req.body.password)
-    console.log("login", req.body.login)
-    console.log("email", req.body.email)
-    console.log("password", req.body.password)
+
     if (!resultRegistration) {
         return res.status(HTTP_STATUS.Bad_request)
     }
