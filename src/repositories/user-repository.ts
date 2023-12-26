@@ -87,7 +87,7 @@ export class UserRepository {
     }
 
     static async confirmUser(body: CodeConfirmModel): Promise<ResultCodeHandler<null>> {
-        const findUserEmailByCod = await EmailsModel.findOne({confirmationCode: body.code})
+        const findUserEmailByCod = await EmailsModel.findOne({'emailConfirmation.confirmationCode': body.code})
         if(!findUserEmailByCod) {
             return resultCodeMap(false, null, "Code_No_Valid")
         }
