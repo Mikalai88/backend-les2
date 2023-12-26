@@ -84,7 +84,12 @@ export class UserRepository {
     }
 
     static async confirmUser(body: CodeConfirmModel): Promise<ResultCodeHandler<null>> {
+        console.log('confirmUser(body: CodeConfirmModel)', body)
+
         const findUserEmailByCode = await userCollection.findOne({'emailConfirmation.confirmationCode': body.code})
+        console.log('findUserEmailByCode', findUserEmailByCode?.emailConfirmation.isConfirmed)
+
+
         if(!findUserEmailByCode) {
             return resultCodeMap(false, null, "Code_No_Valid")
         }
@@ -94,7 +99,10 @@ export class UserRepository {
         if(findUserEmailByCode.emailConfirmation.expirationDate < new Date()) {
             return resultCodeMap(false, null, "Expiration_Date")
         }
-        await userCollection.updateOne({email: findUserEmailByCode.emailConfirmation.userEmail}, {$unset: {'emailConfirmation.expirationDate': 1, 'emailConfirmation.confirmationCode': 1},  $set:{'emailConfirmation.isConfirmed': true}}) // !!!
+        await userCollection.updateOne({email: findUserEmailByCode.emailConfirmation.userEmail},
+            {$unset: {'findUserEmailByCode.emailConfirmation.expirationDate': 1, 'findUserEmailByCode.emailConfirmation.confirmationCode': 1},
+                $set:{'findUserEmailByCode.emailConfirmation.isConfirmed': true}})
+
         return resultCodeMap(true, null)
     }
 
