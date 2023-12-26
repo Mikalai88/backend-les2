@@ -2,6 +2,13 @@ import bcrypt from 'bcrypt'
 import {OutputItemsUserType, UserType} from "../types/user/output";
 import {randomUUID} from "crypto";
 import {UserRepository} from "../repositories/user-repository";
+import {EmailConfirmationClass} from "../classes/email-confirmation-class";
+import {ResultCodeHandler, resultCodeMap} from "./comment-service";
+import {CodeConfirmModel} from "../types/user/input";
+import {add} from "date-fns";
+import {v4 as uuidv4} from 'uuid';
+import {EmailResending} from "../types/email";
+import {emailAdapter} from "../adapters/email-adapter";
 
 export const usersService = {
     async createUser(login: string, email: string, password: string): Promise<string | null> {
@@ -11,9 +18,9 @@ export const usersService = {
         const newUser: UserType = {
             id: randomUUID(),
             userLogin: login,
-            userEmail: email,
             passwordHash,
-            createdAt: (new Date()).toISOString()
+            createdAt: (new Date()).toISOString(),
+            emailConfirmation: new EmailConfirmationClass(email)
         }
 
         const result = await UserRepository.createUser(newUser)
@@ -30,6 +37,38 @@ export const usersService = {
 
     async deleteUser(id: string): Promise<boolean> {
         return UserRepository.deleteUser(id)
+    },
+
+    async confirmUser(body: CodeConfirmModel): Promise<ResultCodeHandler<null>> {
+        return await UserRepository.confirmUser(body)
+    },
+
+    async emailResending(body: EmailResending): Promise<ResultCodeHandler<null>> {
+        const findConfirmationData = await UserRepository.findUserEmail(body)
+
+        if (!findConfirmationData) {
+            return resultCodeMap(false, null, "Not_Found")
+        }
+        if (findConfirmationData.isConfirmed) {
+            return resultCodeMap(false, null, "Is_Confirmed")
+        }
+        const newConfirmationData = {
+            ...findConfirmationData,
+            expirationDate: add(new Date(), {
+                minutes: 5
+            }),
+            confirmationCode: uuidv4()
+        }
+        const result = await UserRepository.resendingEmail(newConfirmationData)
+
+        if (!result) return resultCodeMap(false, null, "Error_Server")
+
+        try {
+            await emailAdapter.sendEmail(findConfirmationData.userEmail, newConfirmationData.confirmationCode)
+        } catch (e) {
+            return resultCodeMap(false, null, "Error_Server")
+        }
+        return resultCodeMap(true, null)
     },
 
     async checkCredentials(loginOrEmail: string, password: string) {

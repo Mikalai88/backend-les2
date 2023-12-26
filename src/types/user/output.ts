@@ -1,3 +1,4 @@
+import {EmailConfirmationModel} from "../email";
 
 export type OutputItemsUserType = {
     id: string
@@ -17,7 +18,7 @@ export type OutputUserType = {
 export type UserType = {
     id: string
     userLogin: string
-    userEmail: string
     passwordHash: string
     createdAt: string
+    emailConfirmation: EmailConfirmationModel
 }

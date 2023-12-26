@@ -1,10 +1,13 @@
-import {blogCollection, userCollection} from "../db/db";
+import {blogCollection, EmailsModel, userCollection} from "../db/db";
 import {OutputItemsUserType, OutputUserType, UserType} from "../types/user/output";
 import {blogMapper} from "../types/blog/mapper";
 import {SortBlogsDataType} from "../types/blog/input";
-import {SortUsersDataType} from "../types/user/input";
+import {CodeConfirmModel, SortUsersDataType} from "../types/user/input";
 import {userMapper} from "../types/user/mapper";
 import {OutputItemsBlogType} from "../types/blog/output";
+import {ResultCodeHandler, resultCodeMap} from "../domain/comment-service";
+import {Errors} from "../enums/errors";
+import {EmailConfirmationModel, EmailResending} from "../types/email";
 
 export class UserRepository {
     static async getAllUsers(sortData: SortUsersDataType): Promise<OutputUserType> {
@@ -72,6 +75,30 @@ export class UserRepository {
     static async findByLoginOrEmail(loginOrEmail: string) {
         const user = await userCollection.findOne({$or: [{userEmail: loginOrEmail}, {userLogin: loginOrEmail}]})
         return user
+    }
+
+    static async findUserEmail(body: EmailResending) {
+        return EmailsModel.findOne({email: body.userEmail})
+    }
+
+    static async resendingEmail(newConfirmationData: EmailConfirmationModel) : Promise<boolean> {
+        const resultUpdateConfirmData = await EmailsModel.updateOne({email: newConfirmationData.userEmail}, {$set: newConfirmationData})
+        return resultUpdateConfirmData.acknowledged
+    }
+
+    static async confirmUser(body: CodeConfirmModel): Promise<ResultCodeHandler<null>> {
+        const findUserEmailByCod = await EmailsModel.findOne({confirmationCode: body.code})
+        if(!findUserEmailByCod) {
+            return resultCodeMap(false, null, "Code_No_Valid")
+        }
+        if(findUserEmailByCod.isConfirmed) {
+            return resultCodeMap(false, null, "Is_Confirmed")
+        }
+        if(findUserEmailByCod.expirationDate < new Date()) {
+            return resultCodeMap(false, null, "Expiration_Date")
+        }
+        await EmailsModel.updateOne({email: findUserEmailByCod.userEmail}, {$unset: {expirationDate: 1, confirmationCode: 1},  $set:{isConfirmed: true}})
+        return resultCodeMap(true, null)
     }
 
     static async deleteUser(id: string) {

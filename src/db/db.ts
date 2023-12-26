@@ -16,6 +16,8 @@ export const postCollection = db.collection<PostType>('post')
 export const videoCollection = db.collection<VideoType>('video')
 export const userCollection = db.collection<UserType>('user')
 export const commentCollection = db.collection<CommentViewModel>('comment')
+export const RequestCountsModel = db.collection<TypeRequestCount>('api_requests')
+export const EmailsModel = db.collection<EmailConfirmationModel>('emails')
 
 export const runDb = async () => {
     try {
@@ -36,6 +38,8 @@ import {BlogType, OutputBlogType} from "../types/blog/output";
 import {OutputItemsPostType, PostType} from "../types/post/output";
 import {UserType} from "../types/user/output";
 import {CommentViewModel} from "../types/comment/output";
+import {TypeRequestCount} from "../types/api/api-request-model";
+import {EmailConfirmationModel} from "../types/email";
 
 // type DBType = {
 //     videos: VideoType[]
