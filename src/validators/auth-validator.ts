@@ -32,7 +32,7 @@ const registrationUserLoginValidationRule = body('login')
     .isLength({min: 3, max: 10}).withMessage(ERRORS_MESSAGE.IS_LENGTH)
     .matches('^[a-zA-Z0-9_-]*$').withMessage(ERRORS_MESSAGE.PATTERN_INCORRECT)
     .custom(async login => {
-        const user = await userCollection.findOne({login: login})
+        const user = await userCollection.findOne({userLogin: login})
         if(user) {
             throw new Error(ERRORS_MESSAGE.FOUND)
         }
