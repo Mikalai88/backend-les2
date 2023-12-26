@@ -73,9 +73,9 @@ export class UserRepository {
 
     static async findUserEmail(body: EmailResending) {
 
-        console.log('BODY Email UserRepository', body.email)
+        console.log('BODY Email UserRepository', body.userEmail)
 
-        return userCollection.findOne({'emailConfirmation.userEmail': body.email})
+        return userCollection.findOne({'emailConfirmation.userEmail': body.userEmail})
     }
 
     static async resendingEmail(newConfirmationData: EmailConfirmationModel) : Promise<boolean> {

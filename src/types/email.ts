@@ -6,5 +6,5 @@ export interface EmailConfirmationModel {
 }
 
 export interface EmailResending {
-    email: string
+    userEmail: string
 }
