@@ -3,15 +3,15 @@ import * as nodemailer from "nodemailer";
 export const emailAdapter = {
     async sendEmail(email: string, code: string) {
         let transporter = nodemailer.createTransport({
-            service: 'Mail.ru',
+            service: 'gmail',
             auth: {
-                user: "nikolaaj@mail.ru",
-                pass: "XaehQyUMvQS2a70AZhUH" // Пароль приложения
+                user: "nikolaj.vitebsk@gmail.com",
+                pass: "obte accu twox fjfq" // Пароль приложения
             }
         })
 
         let mailOptions = await transporter.sendMail({
-            from: '"Mikalai" <nikolaaj@gmail.ru>',
+            from: 'Mikalai',
             to: email,
             subject: "Confirmation email.",
             html: ` <h1>Thank for your registration</h1>
