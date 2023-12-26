@@ -60,6 +60,7 @@ authRouter.post('/registration-confirmation', limitRequestMiddleware, codeValida
 
 authRouter.post('/registration-email-resending', limitRequestMiddleware, emailValidationMiddleware(),
     async (req: RequestWithBody<EmailResending>, res: Response) => {
+        console.log("authRouter.post: req.body", req.body)
     const resendingResult = await usersService.emailResending(req.body)
     if (resendingResult.error === "Not_Found") {
         return res.status(HTTP_STATUS.Bad_request).send(EmailNotFound)

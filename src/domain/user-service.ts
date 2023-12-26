@@ -52,7 +52,11 @@ export const usersService = {
     },
 
     async emailResending(body: EmailResending): Promise<ResultCodeHandler<null>> {
+        console.log("BODY", body)
+
         const findConfirmationData = await UserRepository.findUserEmail(body)
+
+        console.log("findConfirmationData", findConfirmationData)
 
         if (!findConfirmationData) {
             return resultCodeMap(false, null, "Not_Found")
@@ -67,7 +71,12 @@ export const usersService = {
             }),
             confirmationCode: uuidv4()
         }
+
+        console.log('newConfirmationData', newConfirmationData)
+
         const result = await UserRepository.resendingEmail(newConfirmationData)
+
+        console.log('result', result)
 
         if (!result) return resultCodeMap(false, null, "Error_Server")
 
