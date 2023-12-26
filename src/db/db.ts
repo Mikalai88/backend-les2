@@ -17,7 +17,7 @@ export const videoCollection = db.collection<VideoType>('video')
 export const userCollection = db.collection<UserType>('user')
 export const commentCollection = db.collection<CommentViewModel>('comment')
 export const RequestCountsModel = db.collection<TypeRequestCount>('api_requests')
-export const EmailsModel = db.collection<EmailConfirmationModel>('emails')
+// export const EmailsModel = db.collection<EmailConfirmationModel>('emails')
 
 export const runDb = async () => {
     try {

@@ -57,11 +57,11 @@ export const usersService = {
         if (!findConfirmationData) {
             return resultCodeMap(false, null, "Not_Found")
         }
-        if (findConfirmationData.isConfirmed) {
+        if (findConfirmationData.emailConfirmation.isConfirmed) {
             return resultCodeMap(false, null, "Is_Confirmed")
         }
         const newConfirmationData = {
-            ...findConfirmationData,
+            ...findConfirmationData.emailConfirmation,
             expirationDate: add(new Date(), {
                 minutes: 5
             }),
@@ -72,7 +72,7 @@ export const usersService = {
         if (!result) return resultCodeMap(false, null, "Error_Server")
 
         try {
-            await emailAdapter.sendEmail(findConfirmationData.userEmail, newConfirmationData.confirmationCode)
+            await emailAdapter.sendEmail(findConfirmationData.emailConfirmation.userEmail, newConfirmationData.confirmationCode)
         } catch (e) {
             return resultCodeMap(false, null, "Error_Server")
         }
