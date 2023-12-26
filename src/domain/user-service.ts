@@ -9,6 +9,7 @@ import {add} from "date-fns";
 import {v4 as uuidv4} from 'uuid';
 import {EmailResending} from "../types/email";
 import {emailAdapter} from "../adapters/email-adapter";
+import {body} from "express-validator";
 
 export const usersService = {
     async createUser(login: string, email: string, password: string): Promise<string | null> {
@@ -27,6 +28,13 @@ export const usersService = {
         if (!result) {
             return null
         }
+
+        const code = newUser.emailConfirmation.confirmationCode
+        const resultSendEmail = await emailAdapter.sendEmail(email, code)
+        if (!resultSendEmail) {
+            return null
+        }
+
         return newUser.id
 
     },

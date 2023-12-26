@@ -6,7 +6,7 @@ export const emailAdapter = {
             service: 'Mail.ru',
             auth: {
                 user: "nikolaaj@mail.ru",
-                pass: process.env.MAIL_RU_PASS // Пароль приложения
+                pass: "XaehQyUMvQS2a70AZhUH" // Пароль приложения
             }
         })
 
