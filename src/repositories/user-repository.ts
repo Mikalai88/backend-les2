@@ -87,7 +87,6 @@ export class UserRepository {
         console.log('confirmUser(body: CodeConfirmModel)', body)
 
         const findUserEmailByCode = await userCollection.findOne({'emailConfirmation.confirmationCode': body.code})
-        console.log('findUserEmailByCode', findUserEmailByCode?.emailConfirmation.isConfirmed)
 
 
         if(!findUserEmailByCode) {
@@ -99,9 +98,15 @@ export class UserRepository {
         if(findUserEmailByCode.emailConfirmation.expirationDate < new Date()) {
             return resultCodeMap(false, null, "Expiration_Date")
         }
-        await userCollection.updateOne({email: findUserEmailByCode.emailConfirmation.userEmail},
-            {$unset: {'findUserEmailByCode.emailConfirmation.expirationDate': 1, 'findUserEmailByCode.emailConfirmation.confirmationCode': 1},
-                $set:{'findUserEmailByCode.emailConfirmation.isConfirmed': true}})
+
+        const updateObject = {
+                    $set:{'emailConfirmation.isConfirmed': true}}
+        ;
+
+        await userCollection.updateOne(
+            { 'emailConfirmation.confirmationCode': body.code }, // Фильтр для поиска нужного документа
+            updateObject // Объект с изменениями
+        );
 
         return resultCodeMap(true, null)
     }
