@@ -52,7 +52,6 @@ export const usersService = {
     },
 
     async emailResending(body: EmailResending): Promise<ResultCodeHandler<null>> {
-        console.log("BODY", body)
 
         const findConfirmationData = await UserRepository.findUserEmail(body)
 
