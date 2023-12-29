@@ -67,7 +67,7 @@ export class UserRepository {
     }
 
     static async findByLoginOrEmail(loginOrEmail: string) {
-        const user = await userCollection.findOne({$or: [{email: loginOrEmail}, {userLogin: loginOrEmail}]})
+        const user = await userCollection.findOne({$or: [{'emailConfirmation.email': loginOrEmail}, {userLogin: loginOrEmail}]})
         return user
     }
 
@@ -79,7 +79,7 @@ export class UserRepository {
     }
 
     static async resendingEmail(newConfirmationData: EmailConfirmationModel) : Promise<boolean> {
-        const resultUpdateConfirmData = await userCollection.updateOne({email: newConfirmationData.email}, {$set: newConfirmationData})
+        const resultUpdateConfirmData = await userCollection.updateOne({'emailConfirmation.email': newConfirmationData.email}, {$set: newConfirmationData})
         return resultUpdateConfirmData.acknowledged
     }
 
