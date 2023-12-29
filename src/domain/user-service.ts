@@ -74,7 +74,7 @@ export const usersService = {
         if (!result) return resultCodeMap(false, null, "Error_Server")
 
         try {
-             emailAdapter.sendEmail(findConfirmationData.emailConfirmation.email, newConfirmationData.confirmationCode)
+             await emailAdapter.sendEmail(findConfirmationData.emailConfirmation.email, newConfirmationData.confirmationCode)
         } catch (e) {
             return resultCodeMap(false, null, "Error_Server")
         }
