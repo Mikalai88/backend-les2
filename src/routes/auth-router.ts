@@ -31,6 +31,18 @@ authRouter.post('/login', userValidation(), async (req: Request, res: Response) 
     res.status(200).send({accessToken: token})
 })
 
+authRouter.post('/logout', async (req: Request, res: Response) => {
+    const tokenRefresh = req.cookies.refreshToken
+    if (!tokenRefresh) {
+        return res.sendStatus(HTTP_STATUS.Unauthorized)
+    }
+    const resultLogout = await DevicesService.logoutUser(tokenRefresh)
+    if (resultLogout.error === "Unauthorized") {
+        return res.sendStatus(HTTP_STATUS.Unauthorized)
+    }
+    return res.sendStatus(HTTP_STATUS.No_content)
+})
+
 authRouter.post('/registration', limitRequestMiddleware, userRegistrationValidation(), async (req: RequestWithBody<UserInputModel>, res: Response) => {
     const resultRegistration = await usersService.createUser(req.body.login, req.body.email, req.body.password)
 

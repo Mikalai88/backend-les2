@@ -48,4 +48,20 @@ export class DevicesService {
         return resultCodeMap(true, newTokens)
     }
 
+    static async logoutUser(token: string) {
+        const decodeToken = await JwtService.decodeToken(token)
+        if(!decodeToken) {
+            return resultCodeMap(false, null, "Unauthorized")
+        }
+        const user = await DeviceRepository.findDeviceByUserId(decodeToken.userId)
+        if(!user) {
+            return resultCodeMap(false, null, "Unauthorized")
+        }
+        const logoutDevice = await DeviceRepository.tokenDecay(decodeToken.deviceId)
+        if(!logoutDevice) {
+            return resultCodeMap(false, null, "Error_Server")
+        }
+        return resultCodeMap(true, null)
+    }
+
 }
