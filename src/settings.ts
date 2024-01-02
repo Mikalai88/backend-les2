@@ -6,10 +6,13 @@ import {testingRoute} from "./routes/testing-route";
 import {userRoute} from "./routes/user-route";
 import {authRouter} from "./routes/auth-router";
 import {commentRouter} from "./routes/comment-router";
+import cookieParser from "cookie-parser";
+
 
 export const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.use((req, res, next) => {
 
