@@ -15,9 +15,8 @@ import {RequestWithBody} from "../types/common";
 import {CodeConfirmModel, UserInputModel} from "../types/user/input";
 import {HTTP_STATUS} from "../enums/enum-HTTP";
 import {limitRequestMiddleware} from "../middlewares/auth/limit-request";
-import {EmailResending} from "../types/email";
 import {CodeIncorrectMessage, CodeConfirmed, EmailNotFound, ExpiredCodeMessage} from "../enums/errors-messages";
-import {body} from "express-validator";
+import {DevicesService} from "../domain/devices-service";
 
 export const authRouter = Router({})
 
@@ -42,6 +41,21 @@ authRouter.post('/registration', limitRequestMiddleware, userRegistrationValidat
         return res.sendStatus(HTTP_STATUS.No_content)
     }
     return res.sendStatus(HTTP_STATUS.Server_error)
+})
+
+authRouter.post('/refresh-token', async (req: Request, res: Response) => {
+    const token = req.cookies.refreshToken
+    if (!token) {
+        return res.sendStatus(HTTP_STATUS.Unauthorized)
+    }
+    const resultUpdateToken = await DevicesService.updateRefreshToken(token)
+    if (!resultUpdateToken.data) {
+        return res.sendStatus(HTTP_STATUS.Unauthorized)
+    }
+    return res
+        .cookie('refreshToken', resultUpdateToken.data.refreshToken, {httpOnly: true, secure: true})
+        .status(HTTP_STATUS.OK)
+        .send({accessToken: resultUpdateToken.data.accessToken})
 })
 
 authRouter.post('/registration-confirmation', limitRequestMiddleware, codeValidationMiddleware(), async (req: RequestWithBody<CodeConfirmModel>, res: Response) => {

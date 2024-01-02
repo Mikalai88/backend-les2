@@ -1,17 +1,15 @@
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import {settings} from "../settings";
-import {ObjectId, WithId} from "mongodb";
 import {UserType} from "../types/user/output";
 
 
 export class JwtService {
     static async createAccessToken(user: UserType) {
-        return jwt.sign({userID: user.id}, settings.JWT_SECRET, {expiresIn: '600s'})
-
+        return jwt.sign({userID: user.id}, settings.JWT_SECRET, {expiresIn: '10s'})
     }
 
     static async createRefreshToken(deviceId: string, userId: string) {
-        return jwt.sign({deviceId: deviceId, userId: userId}, settings.JWT_SECRET, {expiresIn: '3600s'})
+        return jwt.sign({deviceId: deviceId, userId: userId}, settings.JWT_SECRET, {expiresIn: '20s'})
 
     }
 

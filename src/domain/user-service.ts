@@ -9,7 +9,6 @@ import {add} from "date-fns";
 import {v4 as uuidv4} from 'uuid';
 import {EmailResending} from "../types/email";
 import {emailAdapter} from "../adapters/email-adapter";
-import {body} from "express-validator";
 
 export const usersService = {
     async createUser(login: string, email: string, password: string): Promise<string | null> {
@@ -83,7 +82,6 @@ export const usersService = {
 
     async checkCredentials(loginOrEmail: string, password: string) {
         const user = await UserRepository.findByLoginOrEmail(loginOrEmail)
-        console.log("USER AUTH", user)
         if (!user) return false
         const compaireResult = await bcrypt.compare(password, user.passwordHash)
         if (!compaireResult) {
