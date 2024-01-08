@@ -35,7 +35,6 @@ export const usersService = {
         }
 
         return newUser.id
-
     },
 
     async findUserById(id: string): Promise<OutputItemsUserType | null> {
@@ -53,6 +52,8 @@ export const usersService = {
     async emailResending(body: EmailResending): Promise<ResultCodeHandler<null>> {
 
         const findConfirmationData = await UserRepository.findUserEmail(body)
+
+        console.log("user-service, findConfirmationData:", findConfirmationData)
 
         if (!findConfirmationData) {
             return resultCodeMap(false, null, "Not_Found")
