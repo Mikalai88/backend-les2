@@ -79,7 +79,7 @@ export class UserRepository {
     }
 
     static async resendingEmail(newConfirmationData: EmailConfirmationModel) : Promise<boolean> {
-        const resultUpdateConfirmData = await userCollection.updateOne({'emailConfirmation.email': newConfirmationData.email}, {$set: newConfirmationData})
+        const resultUpdateConfirmData = await userCollection.updateOne({'emailConfirmation.email': newConfirmationData.email}, {$set: {emailConfirmation: newConfirmationData}})
         return resultUpdateConfirmData.acknowledged
     }
 
