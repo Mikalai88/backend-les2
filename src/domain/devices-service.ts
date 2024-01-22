@@ -10,36 +10,17 @@ import {userCollection} from "../db/db";
 
 export class DevicesService {
     static async updateRefreshToken(token: string): Promise<ResultCodeHandler<TokensModel>> {
-        const decodeToken: JwtPayload | null = await JwtService.decodeToken(token)
-        if (!decodeToken) {
+        const userId: string | null = await JwtService.verifyJWT(token)
+        if (!userId) {
             return resultCodeMap(false, null, "Unauthorized")
         }
-        const device: DevicesDbModel | null = await DeviceRepository.findDeviceByDeviceId(decodeToken.deviceId)
-        if (!device) {
-            return resultCodeMap(false, null, "Unauthorized")
-        }
-        const user = await userCollection.findOne({id: device.userId})
+        const user = await userCollection.findOne({id: userId})
         if (!user) {
             return resultCodeMap(false, null, "Unauthorized")
         }
-        if (decodeToken.iat !== device.issuedAt) {
-            return resultCodeMap(false, null, "Unauthorized")
-        }
-        if (isBefore(Date.now(), decodeToken.exp!)) {
-            return resultCodeMap(false, null, "Unauthorized")
-        }
         const newAccessToken = await JwtService.createAccessToken(user)
-        const newRefreshToken = await JwtService.createRefreshToken(device.deviceId, user.id!.toString())
-        const decodeNewToken = await JwtService.decodeToken(newRefreshToken)
-        const updateDateToken = {
-            issuedAt: decodeNewToken!.iat,
-            expiresAt: decodeNewToken!.exp
-        }
+        const newRefreshToken = await JwtService.createRefreshToken(user.id)
 
-        const updateResult = await DeviceRepository.updateTokenInfo(updateDateToken, device.deviceId)
-        if (!updateResult) {
-            return resultCodeMap(false, null, "Error_Server")
-        }
         const newTokens = {
             accessToken: newAccessToken,
             refreshToken: newRefreshToken
@@ -57,7 +38,7 @@ export class DevicesService {
         if(!user) {
             return resultCodeMap(false, null, "Unauthorized")
         }
-        const logoutDevice = await DeviceRepository.tokenDecay(decodeToken.deviceId)
+        const logoutDevice = await DeviceRepository.tokenDecay(decodeToken) // записывает в БД токен
         if(!logoutDevice) {
             return resultCodeMap(false, null, "Error_Server")
         }

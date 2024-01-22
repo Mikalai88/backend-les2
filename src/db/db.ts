@@ -15,6 +15,7 @@ export const blogCollection = db.collection<BlogType>('blog')
 export const postCollection = db.collection<PostType>('post')
 export const videoCollection = db.collection<VideoType>('video')
 export const userCollection = db.collection<UserType>('user')
+export const tokenCollection = db.collection<JwtPayload>('token')
 export const commentCollection = db.collection<CommentViewModel>('comment')
 export const RequestCountsModel = db.collection<TypeRequestCount>('api_requests')
 export const DevicesModel = db.collection<DevicesDbModel>('api_requests')
@@ -41,6 +42,7 @@ import {CommentViewModel} from "../types/comment/output";
 import {TypeRequestCount} from "../types/api/api-request-model";
 import {EmailConfirmationModel} from "../types/email";
 import {DevicesDbModel} from "../types/devices-db-model";
+import {JwtPayload} from "jsonwebtoken";
 
 // type DBType = {
 //     videos: VideoType[]

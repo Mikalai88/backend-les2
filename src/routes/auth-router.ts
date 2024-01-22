@@ -17,6 +17,7 @@ import {HTTP_STATUS} from "../enums/enum-HTTP";
 import {limitRequestMiddleware} from "../middlewares/auth/limit-request";
 import {CodeIncorrectMessage, CodeConfirmed, EmailNotFound, ExpiredCodeMessage} from "../enums/errors-messages";
 import {DevicesService} from "../domain/devices-service";
+import {tokenCollection} from "../db/db";
 
 export const authRouter = Router({})
 
@@ -27,8 +28,10 @@ authRouter.post('/login', userValidation(), async (req: Request, res: Response) 
         return
     }
     const token = await JwtService.createAccessToken(user)
-    console.log("TOKEN", token)
-    res.status(200).send({accessToken: token})
+    const refreshToken = await JwtService.createRefreshToken(user._id!.toString())
+    res
+        .cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+        .status(200).send({accessToken: token})
 })
 
 authRouter.post('/logout', async (req: Request, res: Response) => {
@@ -57,17 +60,22 @@ authRouter.post('/registration', limitRequestMiddleware, userRegistrationValidat
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     const token = req.cookies.refreshToken
+    // проверка что токен не в черном списке
     if (!token) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
+    const blackToken = await tokenCollection.findOne({token})
+    if (blackToken) {
+        return res.sendStatus(HTTP_STATUS.Unauthorized)
+    }
     const resultUpdateToken = await DevicesService.updateRefreshToken(token)
-    if (!resultUpdateToken.data) {
+    if (!resultUpdateToken.success) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
     return res
-        .cookie('refreshToken', resultUpdateToken.data.refreshToken, {httpOnly: true, secure: true})
+        .cookie('refreshToken', resultUpdateToken!.data!.refreshToken, {httpOnly: true, secure: true})
         .status(HTTP_STATUS.OK)
-        .send({accessToken: resultUpdateToken.data.accessToken})
+        .send({accessToken: resultUpdateToken!.data!.accessToken})
 })
 
 authRouter.post('/registration-confirmation', limitRequestMiddleware, codeValidationMiddleware(), async (req: RequestWithBody<CodeConfirmModel>, res: Response) => {

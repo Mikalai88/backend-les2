@@ -1,4 +1,6 @@
-import {DevicesModel} from "../db/db";
+import {blogCollection, DevicesModel, tokenCollection} from "../db/db";
+import {OutputItemsBlogType} from "../types/blog/output";
+import {JwtPayload} from "jsonwebtoken";
 
 export class DeviceRepository {
     static async findDeviceByDeviceId(deviceId: string) {
@@ -13,8 +15,14 @@ export class DeviceRepository {
         return DevicesModel.findOne({userId: userId})
     }
 
-    static async tokenDecay(deviceId: string) {
-        const decayResult = await DevicesModel.deleteOne({deviceId: deviceId})
-        return decayResult.deletedCount === 1
+    static async tokenDecay(decodeToken: JwtPayload) {
+        try {
+            const result = await tokenCollection.insertOne(decodeToken)
+            return result.acknowledged
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+
     }
 }
