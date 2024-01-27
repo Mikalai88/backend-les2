@@ -64,10 +64,10 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     if (!token) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
-    // const blackToken = await tokenCollection.findOne({token})
-    // if (blackToken) {
-    //     return res.sendStatus(HTTP_STATUS.Unauthorized)
-    // }
+    const blackToken = await tokenCollection.findOne({token})
+    if (blackToken) {
+        return res.sendStatus(HTTP_STATUS.Unauthorized)
+    }
     console.log("Log2")
     const resultUpdateToken = await DevicesService.updateRefreshToken(token)
     console.log("Log3", resultUpdateToken)

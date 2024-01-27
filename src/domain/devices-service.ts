@@ -10,7 +10,7 @@ import {tokenCollection, userCollection} from "../db/db";
 
 export class DevicesService {
     static async updateRefreshToken(token: string): Promise<ResultCodeHandler<TokensModel>> {
-        // await tokenCollection.insertOne({token})
+        await tokenCollection.insertOne({token})
 
         const userId: string | null = await JwtService.verifyJWT(token)
         console.log("USER_ID", userId)
