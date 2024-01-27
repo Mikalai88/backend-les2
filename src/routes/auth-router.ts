@@ -40,6 +40,8 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
 
+    await tokenCollection.insertOne({token: tokenRefresh})
+
     return res.sendStatus(HTTP_STATUS.No_content)
 })
 
@@ -61,7 +63,7 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     if (!token) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
-    const blackToken = await tokenCollection.findOne({token})
+    const blackToken = await tokenCollection.findOne({token: token})
     if (blackToken) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
