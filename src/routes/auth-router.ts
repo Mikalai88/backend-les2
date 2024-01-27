@@ -28,7 +28,7 @@ authRouter.post('/login', userValidation(), async (req: Request, res: Response) 
         return
     }
     const token = await JwtService.createAccessToken(user)
-    const refreshToken = await JwtService.createRefreshToken(user._id!.toString())
+    const refreshToken = await JwtService.createRefreshToken(user.id!)
     res
         .cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
         .status(200).send({accessToken: token})
@@ -60,7 +60,7 @@ authRouter.post('/registration', limitRequestMiddleware, userRegistrationValidat
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     const token = req.cookies.refreshToken
-    // проверка что токен не в черном списке
+    console.log("Log1")
     if (!token) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
@@ -68,7 +68,9 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     // if (blackToken) {
     //     return res.sendStatus(HTTP_STATUS.Unauthorized)
     // }
+    console.log("Log2")
     const resultUpdateToken = await DevicesService.updateRefreshToken(token)
+    console.log("Log3", resultUpdateToken)
     if (!resultUpdateToken.success) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }

@@ -6,15 +6,19 @@ import {isBefore} from "date-fns";
 import {JwtService} from "../application/jwt-service";
 import {DevicesDbModel} from "../types/devices-db-model";
 import {DeviceRepository} from "../repositories/device-repository";
-import {userCollection} from "../db/db";
+import {tokenCollection, userCollection} from "../db/db";
 
 export class DevicesService {
     static async updateRefreshToken(token: string): Promise<ResultCodeHandler<TokensModel>> {
+        // await tokenCollection.insertOne({token})
+
         const userId: string | null = await JwtService.verifyJWT(token)
+        console.log("USER_ID", userId)
         if (!userId) {
             return resultCodeMap(false, null, "Unauthorized")
         }
         const user = await userCollection.findOne({id: userId})
+        console.log("USER", user)
         if (!user) {
             return resultCodeMap(false, null, "Unauthorized")
         }
