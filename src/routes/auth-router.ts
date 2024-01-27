@@ -42,9 +42,13 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
     }
 
     const tokenExists = await tokenCollection.findOne({ token: tokenRefresh });
+
     if (tokenExists) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
+
+    await tokenCollection.insertOne({token: tokenRefresh})
+
     return res.sendStatus(HTTP_STATUS.No_content)
 })
 
@@ -62,7 +66,6 @@ authRouter.post('/registration', limitRequestMiddleware, userRegistrationValidat
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     const token = req.cookies.refreshToken
-    console.log("Log1")
     if (!token) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
@@ -70,9 +73,9 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     if (blackToken) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
-    console.log("Log2")
+    await tokenCollection.insertOne({token: token})
+
     const resultUpdateToken = await DevicesService.updateRefreshToken(token)
-    console.log("Log3", resultUpdateToken)
     if (!resultUpdateToken.success) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
