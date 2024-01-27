@@ -36,12 +36,15 @@ authRouter.post('/login', userValidation(), async (req: Request, res: Response) 
 
 authRouter.post('/logout', async (req: Request, res: Response) => {
     const tokenRefresh = req.cookies.refreshToken
+
     if (!tokenRefresh) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
 
-    await tokenCollection.insertOne({token: tokenRefresh})
-
+    const tokenExists = await tokenCollection.findOne({ token: tokenRefresh });
+    if (tokenExists) {
+        return res.sendStatus(HTTP_STATUS.Unauthorized)
+    }
     return res.sendStatus(HTTP_STATUS.No_content)
 })
 
