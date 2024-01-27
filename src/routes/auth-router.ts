@@ -39,10 +39,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
     if (!tokenRefresh) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
-    const resultLogout = await DevicesService.logoutUser(tokenRefresh)
-    if (resultLogout.error === "Unauthorized") {
-        return res.sendStatus(HTTP_STATUS.Unauthorized)
-    }
+
     return res.sendStatus(HTTP_STATUS.No_content)
 })
 
@@ -110,7 +107,7 @@ authRouter.post('/registration-email-resending', emailValidationMiddleware(),
     return res.sendStatus(HTTP_STATUS.No_content)
 })
 
-authRouter.get('/me', async (req: Request, res: Response) => {
+authRouter.get('/me', authJWTMiddleware, async (req: Request, res: Response) => {
     const user: OutputItemsUserType | null = await UserRepository.findUserById(req.user!.id)
     if (!user) {
         return res.sendStatus(401)
