@@ -48,6 +48,11 @@ export class DeviceRepository {
         return resultDelete.deletedCount === 1
     }
 
+    static async deleteSessionById(deviceId: string) {
+        const resultDelete = await DevicesModel.deleteOne({deviceId: deviceId})
+        return resultDelete.deletedCount === 1
+    }
+
     async findDeviceByUserId(userId: string) {
         return DevicesModel.findOne({userId: userId})
     }

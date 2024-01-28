@@ -22,6 +22,7 @@ import { randomUUID } from 'crypto'
 import {DevicesDbModel} from "../types/devices-db-model";
 import {Devices} from "../classes/devices-class";
 import {resultCodeMap} from "../domain/comment-service";
+import {DeviceRepository} from "../repositories/device-repository";
 
 export const authRouter = Router({})
 
@@ -76,6 +77,11 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
     }
 
     await tokenCollection.insertOne({token: tokenRefresh})
+
+    const decodeNewRT = await JwtService.decodeToken(tokenRefresh)
+
+
+    await DeviceRepository.deleteSessionById(decodeNewRT!.deviceId)
 
     return res.sendStatus(HTTP_STATUS.No_content)
 })
