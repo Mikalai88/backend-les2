@@ -29,7 +29,7 @@ app.use('/posts', postRoute)
 app.use('/users', userRoute)
 app.use('/auth', authRouter)
 app.use('/comments', commentRouter)
-app.use('/devices', securityDevicesRouter)
+app.use('/security/devices', securityDevicesRouter)
 
 export const settings = {
     JWT_SECRET: process.env.JWT_SECRET || '123'
