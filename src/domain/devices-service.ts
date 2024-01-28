@@ -17,6 +17,7 @@ import {randomUUID} from "crypto";
 export class DevicesService {
     static async updateRefreshToken(token: string): Promise<ResultCodeHandler<TokensModel>> {
         const decodeToken: JwtPayload | null = await JwtService.decodeToken(token)
+        console.log("decodeToken", decodeToken)
         if (!decodeToken) {
             return resultCodeMap(false, null, "Unauthorized")
         }
@@ -24,21 +25,30 @@ export class DevicesService {
         await tokenCollection.insertOne({token: token})
 
         const userId: string | null = await JwtService.verifyJWT(token)
+
         console.log("USER_ID", userId)
+
         if (!userId) {
             return resultCodeMap(false, null, "Unauthorized")
         }
         const device: DevicesDbModel | null = await DeviceRepository.findDeviceByDeviceId(decodeToken.deviceId)
+
+        console.log("device", device)
+
         if (!device) {
             return resultCodeMap(false, null, "Unauthorized")
         }
         const user = await userCollection.findOne({id: userId})
+
         console.log("USER", user)
+
         if (!user) {
             return resultCodeMap(false, null, "Unauthorized")
         }
         const newAccessToken = await JwtService.createAccessToken(user)
+        console.log("newAccessToken", newAccessToken)
         const newRefreshToken = await JwtService.createRefreshToken(device.deviceId, user.id)
+        console.log("newRefreshToken", newRefreshToken)
 
         const newTokens = {
             accessToken: newAccessToken,
@@ -52,7 +62,7 @@ export class DevicesService {
         const cursor = await DeviceRepository.getAllDevicesCurrentUser(userId);
         if (!cursor) return false;
 
-        const findSessions = await cursor.toArray();
+        const findSessions = await cursor;
 
         for (const session of findSessions) {
             if (session.deviceId !== deviceId) {

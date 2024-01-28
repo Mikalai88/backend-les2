@@ -94,6 +94,9 @@ authRouter.post('/registration', limitRequestMiddleware, userRegistrationValidat
 
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     const token = req.cookies.refreshToken
+
+    console.log("token", token)
+
     if (!token) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
@@ -104,6 +107,9 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     await tokenCollection.insertOne({token: token})
 
     const resultUpdateToken = await DevicesService.updateRefreshToken(token)
+
+    console.log("resultUpdateToken", resultUpdateToken)
+
     if (!resultUpdateToken.success) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }

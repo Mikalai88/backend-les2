@@ -9,7 +9,7 @@ export class JwtService {
     }
 
     static async createRefreshToken(deviceId: string, userId: string) {
-        return jwt.sign({userId: userId}, settings.JWT_SECRET, {expiresIn: '20000s'})
+        return jwt.sign({deviceId: deviceId, userId: userId}, settings.JWT_SECRET, {expiresIn: '20000s'})
     }
 
     static async verifyJWT(token: string): Promise<string | null> {
