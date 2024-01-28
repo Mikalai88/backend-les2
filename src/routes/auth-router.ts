@@ -21,7 +21,7 @@ import {tokenCollection} from "../db/db";
 
 export const authRouter = Router({})
 
-authRouter.post('/login', userValidation(), async (req: Request, res: Response) => {
+authRouter.post('/login', limitRequestMiddleware, userValidation(), async (req: Request, res: Response) => {
     const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (!user) {
         res.sendStatus(401)
