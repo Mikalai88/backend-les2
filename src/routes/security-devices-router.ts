@@ -12,6 +12,7 @@ securityDevicesRouter.get('/', async (req: Request, res: Response) => {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
     const devicesCurrentUser = await DeviceRepository.getAllDevicesCurrentUser(tokenDecode.userId)
+    console.log("devicesCurrentUser", devicesCurrentUser)
     return res.status(HTTP_STATUS.OK).send(devicesCurrentUser)
 })
 

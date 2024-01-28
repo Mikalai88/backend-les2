@@ -7,7 +7,7 @@ import {userRoute} from "./routes/user-route";
 import {authRouter} from "./routes/auth-router";
 import {commentRouter} from "./routes/comment-router";
 import cookieParser from "cookie-parser";
-import {securityDevicesRouter} from "./routes/security-devices";
+import {securityDevicesRouter} from "./routes/security-devices-router";
 
 
 export const app = express()
