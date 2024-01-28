@@ -18,20 +18,47 @@ import {limitRequestMiddleware} from "../middlewares/auth/limit-request";
 import {CodeIncorrectMessage, CodeConfirmed, EmailNotFound, ExpiredCodeMessage} from "../enums/errors-messages";
 import {DevicesService} from "../domain/devices-service";
 import {tokenCollection} from "../db/db";
+import { randomUUID } from 'crypto'
+import {DevicesDbModel} from "../types/devices-db-model";
+import {Devices} from "../classes/devices-class";
+import {resultCodeMap} from "../domain/comment-service";
 
 export const authRouter = Router({})
 
 authRouter.post('/login', limitRequestMiddleware, userValidation(), async (req: Request, res: Response) => {
-    const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
-    if (!user) {
-        res.sendStatus(401)
-        return
+    const resultLogin = await DevicesService.loginDevice(req.body, req.headers, req.ip)
+    if (!resultLogin.data) {
+        return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
-    const token = await JwtService.createAccessToken(user)
-    const refreshToken = await JwtService.createRefreshToken(user.id!)
-    res
-        .cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
-        .status(200).send({accessToken: token})
+    return res
+        .cookie('refreshToken', resultLogin.data.refreshToken, {httpOnly: true, secure: true})
+        .status(HTTP_STATUS.OK).send({accessToken: resultLogin.data.accessToken})
+
+    // const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+    // if (!user) {
+    //     res.sendStatus(401)
+    //     return
+    // }
+    //
+    // const deviceId = randomUUID();
+    // const token = await JwtService.createAccessToken(user)
+    // const refreshToken = await JwtService.createRefreshToken(user.id!)
+    // const tokenDecode = await JwtService.decodeToken(refreshToken)
+    // if (!tokenDecode) {
+    //     return resultCodeMap(false, null, "Unauthorized")
+    // }
+    //
+    // const newDevice: DevicesDbModel = new Devices(
+    //     tokenDecode.deviceId,
+    //     header["user-agent"],
+    //     tokenDecode.iat!,
+    //     tokenDecode.exp!,
+    //     user.id,
+    //     ip)
+    //
+    // res
+    //     .cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+    //     .status(200).send({accessToken: token})
 })
 
 authRouter.post('/logout', async (req: Request, res: Response) => {
@@ -41,9 +68,9 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
 
-    const tokenExists = await tokenCollection.findOne({ token: tokenRefresh });
+    const blackToken = await tokenCollection.findOne({ token: tokenRefresh });
 
-    if (tokenExists) {
+    if (blackToken) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
 

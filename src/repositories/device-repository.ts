@@ -2,11 +2,16 @@ import {blogCollection, DevicesModel, tokenCollection} from "../db/db";
 import {OutputItemsBlogType} from "../types/blog/output";
 import {JwtPayload} from "jsonwebtoken";
 import {devicesMap} from "../utils/devices-map";
+import {DevicesDbModel} from "../types/devices-db-model";
 
 export class DeviceRepository {
     static async findDeviceByDeviceId(deviceId: string) {
         return  DevicesModel.findOne({deviceId: deviceId})
     }
+    static async saveLoginDevice(newDevice: DevicesDbModel) {
+        return  DevicesModel.insertOne(newDevice)
+    }
+
 
     static async updateTokenInfo(updateDateToken: object, deviceId: string) {
         return DevicesModel.updateOne({deviceId: deviceId}, {$set: updateDateToken})

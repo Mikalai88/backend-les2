@@ -7,6 +7,7 @@ import {userRoute} from "./routes/user-route";
 import {authRouter} from "./routes/auth-router";
 import {commentRouter} from "./routes/comment-router";
 import cookieParser from "cookie-parser";
+import {securityDevicesRouter} from "./routes/security-devices";
 
 
 export const app = express()
@@ -28,6 +29,7 @@ app.use('/posts', postRoute)
 app.use('/users', userRoute)
 app.use('/auth', authRouter)
 app.use('/comments', commentRouter)
+app.use('/devices', securityDevicesRouter)
 
 export const settings = {
     JWT_SECRET: process.env.JWT_SECRET || '123'

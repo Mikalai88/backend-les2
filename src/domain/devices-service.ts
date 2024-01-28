@@ -7,14 +7,29 @@ import {JwtService} from "../application/jwt-service";
 import {DevicesDbModel} from "../types/devices-db-model";
 import {DeviceRepository} from "../repositories/device-repository";
 import {tokenCollection, userCollection} from "../db/db";
+import {IncomingHttpHeaders} from "http";
+import {LoginInputModel} from "../types/login-input-model";
+import {usersService} from "./user-service";
+import {WithId} from "mongodb";
+import {Devices} from "../classes/devices-class";
+import {randomUUID} from "crypto";
 
 export class DevicesService {
     static async updateRefreshToken(token: string): Promise<ResultCodeHandler<TokensModel>> {
+        const decodeToken: JwtPayload | null = await JwtService.decodeToken(token)
+        if (!decodeToken) {
+            return resultCodeMap(false, null, "Unauthorized")
+        }
+
         await tokenCollection.insertOne({token: token})
 
         const userId: string | null = await JwtService.verifyJWT(token)
         console.log("USER_ID", userId)
         if (!userId) {
+            return resultCodeMap(false, null, "Unauthorized")
+        }
+        const device: DevicesDbModel | null = await DeviceRepository.findDeviceByDeviceId(decodeToken.deviceId)
+        if (!device) {
             return resultCodeMap(false, null, "Unauthorized")
         }
         const user = await userCollection.findOne({id: userId})
@@ -23,7 +38,7 @@ export class DevicesService {
             return resultCodeMap(false, null, "Unauthorized")
         }
         const newAccessToken = await JwtService.createAccessToken(user)
-        const newRefreshToken = await JwtService.createRefreshToken(user.id)
+        const newRefreshToken = await JwtService.createRefreshToken(device.deviceId, user.id)
 
         const newTokens = {
             accessToken: newAccessToken,
@@ -62,6 +77,36 @@ export class DevicesService {
         }
         return resultCodeMap(true, null)
     }
+    static async loginDevice(loginOrEmail: string, password: string, header: IncomingHttpHeaders, ip: string): Promise<ResultCodeHandler<TokensModel>> {
+        const user = await usersService.checkCredentials(loginOrEmail, password)
+        if (!user) {
+            return resultCodeMap(false, null, "Unauthorized")
+        }
+
+        const deviceId = randomUUID()
+        const accessToken = await JwtService.createAccessToken(user)
+        const refreshToken = await JwtService.createRefreshToken(deviceId, user.id)
+        const tokenDecode = await JwtService.decodeToken(refreshToken)
+        if (!tokenDecode) {
+            return resultCodeMap(false, null, "Unauthorized")
+        }
+
+        const newDevice: DevicesDbModel = new Devices(
+            tokenDecode.deviceId,
+            header["user-agent"],
+            tokenDecode.iat!,
+            tokenDecode.exp!,
+            user._id.toString(),
+            ip)
+
+        const isSave = await DeviceRepository.saveLoginDevice(newDevice)
+        if (!isSave) {
+            return resultCodeMap(false, null, "Error_Server")
+        }
+        const tokens = {accessToken: accessToken, refreshToken: refreshToken}
+        return resultCodeMap(true, tokens)
+    }
+
 
 
     // static async terminateAllOtherSessions(userId: string, deviceId: string) {

@@ -6,7 +6,7 @@ import {DevicesService} from "../domain/devices-service";
 
 export const securityDevicesRouter = Router({});
 
-securityDevicesRouter.get('/devices', async (req: Request, res: Response) => {
+securityDevicesRouter.get('/', async (req: Request, res: Response) => {
     const tokenDecode = await JwtService.decodeToken(req.cookies.refreshToken)
     if (!tokenDecode) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
@@ -15,7 +15,7 @@ securityDevicesRouter.get('/devices', async (req: Request, res: Response) => {
     return res.status(HTTP_STATUS.OK).send(devicesCurrentUser)
 })
 
-securityDevicesRouter.delete('/devices', async (req: Request, res: Response) => {
+securityDevicesRouter.delete('/', async (req: Request, res: Response) => {
     const tokenDecode = await JwtService.decodeToken(req.cookies.refreshToken)
     if (!tokenDecode) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
@@ -28,7 +28,7 @@ securityDevicesRouter.delete('/devices', async (req: Request, res: Response) => 
 
 })
 
-securityDevicesRouter.delete('/devices/:id',async (req: Request, res: Response) => {
+securityDevicesRouter.delete('/:id',async (req: Request, res: Response) => {
     const tokenDecode = await JwtService.decodeToken(req.cookies.refreshToken)
     if(!tokenDecode) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
