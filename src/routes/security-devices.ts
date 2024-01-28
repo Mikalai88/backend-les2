@@ -33,6 +33,11 @@ securityDevicesRouter.delete('/devices/:id',async (req: Request, res: Response) 
     if(!tokenDecode) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
+
+    if (!req.params.id) {
+        return res.sendStatus(HTTP_STATUS.Not_found)
+    }
+
     const resultTerminate = await DevicesService.terminateThisSession(req.params.id, tokenDecode.userId)
 
     if(resultTerminate.error === "Forbidden") {
