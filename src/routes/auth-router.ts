@@ -26,7 +26,8 @@ import {resultCodeMap} from "../domain/comment-service";
 export const authRouter = Router({})
 
 authRouter.post('/login', limitRequestMiddleware, userValidation(), async (req: Request, res: Response) => {
-    const resultLogin = await DevicesService.loginDevice(req.body, req.headers, req.ip)
+    const resultLogin = await DevicesService.loginDevice(req.body.loginOrEmail, req.body.password, req.headers, req.ip!)
+
     if (!resultLogin.data) {
         return res.sendStatus(HTTP_STATUS.Unauthorized)
     }
