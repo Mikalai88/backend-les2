@@ -99,7 +99,7 @@ authRouter.post('/registration-confirmation', limitRequestMiddleware, codeValida
     return res.sendStatus(HTTP_STATUS.No_content)
 })
 
-authRouter.post('/registration-email-resending', emailValidationMiddleware(),
+authRouter.post('/registration-email-resending', limitRequestMiddleware, emailValidationMiddleware(),
     async (req: Request, res: Response) => {
     const resendingResult = await usersService.emailResending(req.body)
 
