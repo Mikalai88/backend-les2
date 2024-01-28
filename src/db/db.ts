@@ -18,7 +18,7 @@ export const userCollection = db.collection<UserType>('user')
 export const tokenCollection = db.collection<JwtPayload>('token')
 export const commentCollection = db.collection<CommentViewModel>('comment')
 export const RequestCountsModel = db.collection<TypeRequestCount>('api_requests')
-export const DevicesModel = db.collection<DevicesDbModel>('api_requests')
+export const DevicesModel = db.collection<DevicesDbModel>('devices_model')
 
 export const runDb = async () => {
     try {

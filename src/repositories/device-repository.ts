@@ -9,7 +9,16 @@ export class DeviceRepository {
         return  DevicesModel.findOne({deviceId: deviceId})
     }
     static async saveLoginDevice(newDevice: DevicesDbModel) {
-        return  DevicesModel.insertOne(newDevice)
+        try {
+            const result = await DevicesModel.insertOne(newDevice)
+
+            console.log("result", result)
+
+            return result
+        } catch (error) {
+            console.log(error)
+            return null
+        }
     }
 
 
@@ -22,7 +31,9 @@ export class DeviceRepository {
     }
 
     static async getAllDevicesCurrentUser(userId: string) {
-        const deviceArray = await DevicesModel.find({userId: userId})
+        const deviceArray = await DevicesModel.find({ userId: userId }).toArray();
+
+        console.log("deviceArray.map", deviceArray.map(devicesMap))
         return deviceArray.map(devicesMap)
     }
 

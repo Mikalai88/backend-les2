@@ -92,14 +92,19 @@ export class DevicesService {
         }
 
         const newDevice: DevicesDbModel = new Devices(
-            tokenDecode.deviceId,
+            deviceId,
             header["user-agent"],
             tokenDecode.iat!,
             tokenDecode.exp!,
-            user._id.toString(),
+            user.id,
             ip)
 
+        console.log("newDevice", newDevice)
+
         const isSave = await DeviceRepository.saveLoginDevice(newDevice)
+
+        console.log("isSave", isSave)
+
         if (!isSave) {
             return resultCodeMap(false, null, "Error_Server")
         }
