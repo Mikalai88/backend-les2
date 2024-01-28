@@ -17,7 +17,6 @@ import {randomUUID} from "crypto";
 export class DevicesService {
     static async updateRefreshToken(token: string): Promise<ResultCodeHandler<TokensModel>> {
         const decodeToken: JwtPayload | null = await JwtService.decodeToken(token)
-        console.log("decodeToken", decodeToken)
         if (!decodeToken) {
             return resultCodeMap(false, null, "Unauthorized")
         }
@@ -54,6 +53,13 @@ export class DevicesService {
             accessToken: newAccessToken,
             refreshToken: newRefreshToken
         }
+
+        const decodeNewRT = await JwtService.decodeToken(newRefreshToken)
+
+        const newIssAt = decodeNewRT!.iat
+        const newExpAt = decodeNewRT!.exp
+
+        await DeviceRepository.updateIssAndExAt(device.deviceId, newIssAt!, newExpAt!)
 
         return resultCodeMap(true, newTokens)
     }

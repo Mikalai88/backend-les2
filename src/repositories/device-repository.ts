@@ -8,6 +8,11 @@ export class DeviceRepository {
     static async findDeviceByDeviceId(deviceId: string) {
         return  DevicesModel.findOne({deviceId: deviceId})
     }
+
+    static async updateIssAndExAt(deviceId: string, newIssAt: number, newExpAt: number) {
+        const result = await DevicesModel.updateOne({deviceId: deviceId}, {$set: {issuedAt: newIssAt, expiresAt: newExpAt}})
+        return result.acknowledged
+    }
     static async saveLoginDevice(newDevice: DevicesDbModel) {
         try {
             const result = await DevicesModel.insertOne(newDevice)
