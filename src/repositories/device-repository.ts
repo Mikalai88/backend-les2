@@ -1,6 +1,7 @@
 import {blogCollection, DevicesModel, tokenCollection} from "../db/db";
 import {OutputItemsBlogType} from "../types/blog/output";
 import {JwtPayload} from "jsonwebtoken";
+import {devicesMap} from "../utils/devices-map";
 
 export class DeviceRepository {
     static async findDeviceByDeviceId(deviceId: string) {
@@ -12,6 +13,20 @@ export class DeviceRepository {
     }
 
     static async findDeviceByUserId(userId: string) {
+        return DevicesModel.findOne({userId: userId})
+    }
+
+    static async getAllDevicesCurrentUser(userId: string) {
+        const deviceArray = await DevicesModel.find({userId: userId})
+        return deviceArray.map(devicesMap)
+    }
+
+    static async terminateSessions(deviceId: string) {
+        const resultDelete = await DevicesModel.deleteOne({deviceId: deviceId})
+        return resultDelete.deletedCount === 1
+    }
+
+    async findDeviceByUserId(userId: string) {
         return DevicesModel.findOne({userId: userId})
     }
 
