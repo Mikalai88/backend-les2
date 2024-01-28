@@ -21,8 +21,8 @@ export const devicesMap = (device: DevicesDbModel) => {
 
     return {
         ip: device.ip,
-        deviceId: device.deviceId,
         title: device.title,
-        lastActiveDate: activeDate // Возвращаем время в UTC
+        lastActiveDate: activeDate,
+        deviceId: device.deviceId
     }
 }
